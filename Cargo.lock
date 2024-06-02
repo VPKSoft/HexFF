@@ -1192,6 +1192,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
+name = "hex_ff"
+version = "0.1.0"
+dependencies = [
+ "confy",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-window-state",
+ "tokio",
+]
+
+[[package]]
 name = "html5ever"
 version = "0.26.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2877,20 +2891,6 @@ checksum = "5993dc129e544393574288923d1ec447c857f3f644187f4fbf7d9a875fbfc4fb"
 dependencies = [
  "embed-resource",
  "toml 0.7.8",
-]
-
-[[package]]
-name = "tauri_template"
-version = "0.0.0"
-dependencies = [
- "confy",
- "serde",
- "serde_derive",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-window-state",
- "tokio",
 ]
 
 [[package]]

@@ -6,8 +6,8 @@
         "distDir": "../dist"
     },
     "package": {
-        "productName": "TauriTemplate",
-        "version": "0.0.0"
+        "productName": "HexFF",
+        "version": "0.1.0"
     },
     "tauri": {
         "allowlist": {
@@ -33,7 +33,7 @@
         },
         "windows": [
             {
-                "title": "TauriTemplate",
+                "title": "HexFF",
                 "width": 800,
                 "height": 600,
                 "decorations": false

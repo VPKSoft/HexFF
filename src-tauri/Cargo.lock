@@ -2891,8 +2891,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "tauri_template"
-version = "0.0.0"
+name = "hex_ff"
+version = "0.1.0"
 dependencies = [
  "confy",
  "serde",
