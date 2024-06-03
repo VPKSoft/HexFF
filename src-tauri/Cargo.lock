@@ -1192,6 +1192,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
+name = "hex_ff"
+version = "0.1.0"
+dependencies = [
+ "confy",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-window-state",
+ "tokio",
+]
+
+[[package]]
 name = "html5ever"
 version = "0.26.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2798,7 +2812,7 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-window-state"
 version = "0.1.1"
-source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#5e3900e682e13f3759b439116ae2f77a6d389ca2"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#10a4d76fb3e76dc0fe240dcb4530886985c45135"
 dependencies = [
  "bincode",
  "bitflags 2.4.2",
@@ -2888,20 +2902,6 @@ checksum = "5993dc129e544393574288923d1ec447c857f3f644187f4fbf7d9a875fbfc4fb"
 dependencies = [
  "embed-resource",
  "toml 0.7.8",
-]
-
-[[package]]
-name = "hex_ff"
-version = "0.1.0"
-dependencies = [
- "confy",
- "serde",
- "serde_derive",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-window-state",
- "tokio",
 ]
 
 [[package]]
