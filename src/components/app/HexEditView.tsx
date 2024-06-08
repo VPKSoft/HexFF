@@ -42,6 +42,7 @@ const HexEditViewComponent = ({
     const onCellChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
         const id = Number.parseInt(e.target.id);
+        // eslint-disable-next-line no-console
         console.log(`${newValue} / ${id}`);
     }, []);
 
@@ -93,7 +94,8 @@ const HexEditViewComponent = ({
                                                 {(fromPosition + currentRow).toString(16).padStart(8, "0")}
                                             </div>
                                         </td>
-                                    ) : (buffPosition >= valueBuff.length ? (
+                                    ) : // eslint-disable-next-line prettier/prettier
+                                    (buffPosition >= valueBuff.length ? (
                                         <td key={runningId++} />
                                     ) : (
                                         <td className="InputCell" key={runningId++}>
@@ -106,6 +108,7 @@ const HexEditViewComponent = ({
                                                 value={valueBuff[buffPosition++].toString(16).padStart(2, "0")}
                                             />
                                         </td>
+                                        // eslint-disable-next-line prettier/prettier
                                     ));
                                 })}
                             </tr>
