@@ -27,4 +27,17 @@ export const appToolbarItems = (localize?: LocalizeFunction): (ToolBarItem<MenuK
         tooltipTitle: localize?.("aboutMenu") ?? "About",
         clickActionObject: "aboutMenu",
     },
+    "|",
+    {
+        icon: <FontAwesomeIcon icon={faInfo} />,
+        title: "Open file",
+        tooltipTitle: "Open file",
+        clickActionObject: "openFile",
+    },
+    {
+        icon: <FontAwesomeIcon icon={faInfo} />,
+        title: "Read file",
+        tooltipTitle: "Read file",
+        clickActionObject: "readFile",
+    },
 ];

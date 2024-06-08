@@ -1,3 +1,7 @@
 {
-    "updateCheckFailedFile": "Tiedostoa avataessa tapahtui virhe: {{error}}."
+    "updateCheckFailedFile": "Tiedostoa avataessa tapahtui virhe: {{error}}.",
+    "allFiles": "Kaikki tiedostot",
+    "openFile": "Avaa tiedosto",
+    "fileOpenFailed": "Tiedostoa avataessa tapahtui virhe: '{{error}}'.",
+    "fileReadFailed": "Tiedostoa avataessa tapahtui virhe: '{{error}}'."
 }

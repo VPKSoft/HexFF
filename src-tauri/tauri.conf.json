@@ -6,7 +6,7 @@
         "distDir": "../dist"
     },
     "package": {
-        "productName": "TauriTemplate",
+        "productName": "HexFF",
         "version": "0.0.0"
     },
     "tauri": {
@@ -29,13 +29,17 @@
             },
             "process": {
                 "exit": true
+            },
+            "dialog": {
+                "open": true,
+                "save": true
             }
         },
         "windows": [
             {
-                "title": "TauriTemplate",
-                "width": 800,
-                "height": 600,
+                "title": "HexFF",
+                "width": 1200,
+                "height": 750,
                 "decorations": false
             }
         ],
