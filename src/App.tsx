@@ -32,8 +32,19 @@ const App = () => {
     const [settings, settingsLoaded, updateSettings] = useSettings();
     const [contextHolder, notification] = useNotify();
     const [openFiles, setOpenFiles] = useState<AppFileStateResult[]>([]);
+    const { translate, setLocale } = useTranslate();
 
     const { setStateSaverEnabled, restoreState } = useWindowStateSaver(10_000);
+
+    React.useEffect(() => {
+        getOpenFiles()
+            .then((openFiles: AppFileStateResult[]) => {
+                setOpenFiles(openFiles);
+            })
+            .catch((error: Error) => {
+                notification("error", translate("couldNotGetOpenedFiles", undefined, { error }));
+            });
+    }, [notification, translate]);
 
     React.useEffect(() => {
         if (settingsLoaded && settings !== null) {
@@ -41,8 +52,6 @@ const App = () => {
             void restoreState();
         }
     }, [restoreState, settingsLoaded, settings, setStateSaverEnabled]);
-
-    const { translate, setLocale } = useTranslate();
 
     React.useEffect(() => {
         if (settings) {
@@ -91,20 +100,17 @@ const App = () => {
                                             setOpenFiles(openFiles);
                                         })
                                         .catch((error: Error) => {
-                                            notification("error", "Untranslated error: " + error);
+                                            notification("error", translate("couldNotGetOpenedFiles", undefined, { error }));
                                         });
                                 })
                                 .catch((error: Error) => {
-                                    notification("error", translate("fileOpenFailed", undefined, error));
+                                    notification("error", translate("fileOpenFailed", undefined, { error }));
                                 });
                         })
                         .catch((error: Error) => {
-                            notification("error", translate("fileOpenFailed", undefined, { error: error }));
+                            notification("error", translate("fileOpenFailed", undefined, { error }));
                         });
 
-                    break;
-                }
-                case "readFile": {
                     break;
                 }
                 default: {
@@ -150,14 +156,6 @@ const App = () => {
                     openFiles={openFiles}
                     notification={notification}
                 />
-                {/* <HexEditView
-                    rows={16}
-                    fromPosition={256}
-                    //                    value="aW1wb3J0ICogYXMgUmVhY3QgZnJvbSAicmVhY3QiOwppbXBvcnQgeyBzdHlsZWQgfSBmcm9tICJzdHlsZWQtY29tcG9uZW50cyI7CmltcG9ydCBjbGFzc05hbWVzIGZyb20gImNsYXNzbmFtZXMiOwppbXBvcnQgeyBJbnB1dCB9IGZyb20gImFudGQiOwppbXBvcnQgeyBDb21tb25Qcm9wcyB9IGZyb20gIi4uL1R5cGVzIjsKCi8qKgogKiBUaGUgcHJvcHMgZm9yIHRoZSB7QGxpbmsgSGV4RWRpdFZpZXd9IGNvbXBvbmVudC4KICovCnR5cGUgSGV4RWRpdFZpZXdQcm9wcyA9IHsKICAgIHJvd3M6IG51bWJlcjsKICAgIGZyb21Qb3NpdGlvbjogbnVtYmVyOwogICAgdmFsdWU6IHN0cmluZzsKfSAmIENvbW1vblByb3BzOwoKY29uc3QgY29sdW1uczogbnVtYmVyID0gMTY7CgovKioKICogQSAgY29tcG9uZW50IC4uLgogKiBAcGFyYW0gcGFyYW0wIFRoZSBjb21wb25lbnQgcHJvcHM6IHtAbGluayBIZXhFZGl0Vmlld1Byb3BzfS4KICogQHJldHVybnMgQSBjb21wb25lbnQuCiAqLwpjb25zdCBIZXhFZGl0Vmlld0NvbXBvbmVudCA9ICh7CiAgICBjbGFzc05hbWUsIC8vCiAgICByb3dzLAogICAgZnJvbVBvc2l0aW9uLAogICAgdmFsdWUsCn06IEhleEVkaXRWaWV3UHJvcHMpID0+IHsKICAgIGNvbnN0IHZhbHVlQnVmZiA9IFJlYWN0LnVzZU1lbW8oKCkgPT4gewogICAgICAgIHRyeSB7CiAgICAgICAgICAgIHJldHVybiBVaW50OEFycmF5LmZyb20oYXRvYih2YWx1ZSksIGMgPT4gYy5jb2RlUG9pbnRBdCgwKSA/PyAwKTsKICAgICAgICB9IGNhdGNoIHsKICAgICAgICAgICAgcmV0dXJuIG5ldyBVaW50OEFycmF5KCk7CiAgICAgICAgfQogICAgfSwgW3ZhbHVlXSk7CgogICAgY29uc3QgdGFibGVNZW1vID0gUmVhY3QudXNlTWVtbygoKSA9PiB7CiAgICAgICAgY29uc3Qgcm93TWFwID0gQXJyYXkuZnJvbSh7IGxlbmd0aDogcm93cyB9KTsKICAgICAgICBjb25zdCBjb2x1bW5NYXAgPSBBcnJheS5mcm9tKHsgbGVuZ3RoOiBjb2x1bW5zICsgMSB9KTsKICAgICAgICBsZXQgcnVubmluZ0lkID0gMDsKICAgICAgICBsZXQgY3VycmVudFJvdyA9IC1jb2x1bW5zOwogICAgICAgIGxldCBidWZmUG9zaXRpb24gPSAwOwoKICAgICAgICByZXR1cm4gKAogICAgICAgICAgICA8dGFibGU+CiAgICAgICAgICAgICAgICB7Y29sdW1uTWFwLm1hcCgoXywgaTogbnVtYmVyKSA9PiB7CiAgICAgICAgICAgICAgICAgICAgcmV0dXJuIGkgPT09IDAgPyA8dGQga2V5PXtydW5uaW5nSWQrK30+eyJPZmZzZXQgKGgpIn08L3RkPiA6IDx0ZCBrZXk9e3J1bm5pbmdJZCsrfT57KGkgLSAxKS50b1N0cmluZygxNikucGFkU3RhcnQoMiwgIjAiKX08L3RkPjsKICAgICAgICAgICAgICAgIH0pfQogICAgICAgICAgICAgICAge3Jvd01hcC5tYXAoKCkgPT4gewogICAgICAgICAgICAgICAgICAgIGN1cnJlbnRSb3cgKz0gY29sdW1uczsKICAgICAgICAgICAgICAgICAgICByZXR1cm4gKAogICAgICAgICAgICAgICAgICAgICAgICA8dHIga2V5PXtydW5uaW5nSWQrK30+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICB7Y29sdW1uTWFwLm1hcCgoXywgaTogbnVtYmVyKSA9PiB7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIGkgPT09IDAgPyAoCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDx0ZCBrZXk9e3J1bm5pbmdJZCsrfT57KGZyb21Qb3NpdGlvbiArIGN1cnJlbnRSb3cpLnRvU3RyaW5nKDE2KS5wYWRTdGFydCg4LCAiMCIpfTwvdGQ+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKSA6ICgKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPHRkIGtleT17cnVubmluZ0lkKyt9PgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPElucHV0IGtleT17cnVubmluZ0lkKyt9IHZhbHVlPXt2YWx1ZUJ1ZmZbYnVmZlBvc2l0aW9uKytdLnRvU3RyaW5nKDE2KS5wYWRTdGFydCgyLCAiMCIpfSAvPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8L3RkPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICk7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICB9KX0KICAgICAgICAgICAgICAgICAgICAgICAgPC90cj4KICAgICAgICAgICAgICAgICAgICApOwogICAgICAgICAgICAgICAgfSl9CiAgICAgICAgICAgIDwvdGFibGU+CiAgICAgICAgKTsKICAgIH0sIFtmcm9tUG9zaXRpb24sIHJvd3MsIHZhbHVlQnVmZl0pOwoKICAgIHJldHVybiAoCiAgICAgICAgPGRpdiAvLwogICAgICAgICAgICBjbGFzc05hbWU9e2NsYXNzTmFtZXMoSGV4RWRpdFZpZXcubmFtZSwgY2xhc3NOYW1lKX0KICAgICAgICA+CiAgICAgICAgICAgIHt0YWJsZU1lbW99CiAgICAgICAgPC9kaXY+CiAgICApOwp9OwoKY29uc3QgSGV4RWRpdFZpZXcgPSBzdHlsZWQoSGV4RWRpdFZpZXdDb21wb25lbnQpYAogICAgLy8gQWRkIHN0eWxlKHMpIGhlcmUKYDsKCmV4cG9ydCB7IEhleEVkaXRWaWV3IH07Cg=="
-                    // value={"aW1wb3J0ICogYXMgUmVhY3QgZnJvbSAicmVhY3QiOwppbXBvcg=="}
-                    value={hexEditValue}
-                    hexUpperCase={true}
-                /> */}
             </div>
             <AboutPopup //
                 visible={aboutPopupVisible}

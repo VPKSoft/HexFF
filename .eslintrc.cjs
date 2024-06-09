@@ -41,6 +41,7 @@ module.exports = {
         "unicorn/prevent-abbreviations": "off",
         "react-hooks/rules-of-hooks": "error",
         "react-hooks/exhaustive-deps": "warn",
+        "object-shorthand": ["warn", "always"],
         "react/jsx-no-bind": "error",
         "unicorn/no-null": "off",
         "import/order": "warn",
