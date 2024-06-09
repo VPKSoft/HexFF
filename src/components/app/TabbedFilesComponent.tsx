@@ -42,7 +42,7 @@ export const TabbedFilesComponent = ({
                 setOpenFileData(newOpenFileData);
             })
             .catch((error: Error) => {
-                notification("error", translate("fileReadFailed", undefined, { error: error }));
+                notification("error", translate("fileReadFailed", undefined, { error }));
             });
     }, [notification, openFiles, translate]);
 
@@ -51,6 +51,7 @@ export const TabbedFilesComponent = ({
             return {
                 label: f.file_name_no_path,
                 key: f.file_index.toString(),
+                closable: true,
                 children: (
                     <HexEditView //
                         rows={16}
@@ -66,6 +67,8 @@ export const TabbedFilesComponent = ({
         <Tabs //
             className={classNames(TabbedFiles.name, className)}
             items={items}
+            type="editable-card"
+            hideAdd
         ></Tabs>
     );
 };

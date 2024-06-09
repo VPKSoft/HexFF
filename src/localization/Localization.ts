@@ -33,7 +33,7 @@ const fallbackLng: Locales = "en";
 void i18next.use(initReactI18next).init({
     resources: localizationResources,
     lng: defaultLanguage,
-    fallbackLng: fallbackLng,
+    fallbackLng,
 });
 
 /**

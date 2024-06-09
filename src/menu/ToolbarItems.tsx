@@ -1,7 +1,7 @@
 //@ts-expect-error - React is required for JSX
 import * as React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDoorOpen, faGear, faInfo } from "@fortawesome/free-solid-svg-icons";
+import { faDoorOpen, faFolderOpen, faGear, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { LocalizeFunction } from "../localization/Localization";
 
 import { ToolBarItem, ToolBarSeparator } from "./AppToolbar";
@@ -29,15 +29,9 @@ export const appToolbarItems = (localize?: LocalizeFunction): (ToolBarItem<MenuK
     },
     "|",
     {
-        icon: <FontAwesomeIcon icon={faInfo} />,
-        title: "Open file",
-        tooltipTitle: "Open file",
+        icon: <FontAwesomeIcon icon={faFolderOpen} />,
+        title: localize?.("openFile") ?? "Open file",
+        tooltipTitle: localize?.("openFile") ?? "Open file",
         clickActionObject: "openFile",
-    },
-    {
-        icon: <FontAwesomeIcon icon={faInfo} />,
-        title: "Read file",
-        tooltipTitle: "Read file",
-        clickActionObject: "readFile",
     },
 ];
