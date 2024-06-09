@@ -77,7 +77,7 @@ const useTauriUpdater = (passive: boolean, retryCount: number = 5): TauriUpdater
                 setCheckError(true);
                 retries.current++;
                 shouldRetry.current = retries.current < retryCount;
-                setErrorMessage(translate("updateCheckFailedFile", "File open failed with message '{{error}}'.", { error: error }));
+                setErrorMessage(translate("updateCheckFailedFile", "File open failed with message '{{error}}'.", { error }));
             });
     }, [retryCount, translate]);
 
