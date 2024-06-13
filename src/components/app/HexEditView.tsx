@@ -202,7 +202,7 @@ const renderDataCell = (columIndex: number, rowIndex: number, buffPosition: numb
             </td>
             // eslint-disable-next-line prettier/prettier
     ));
-    
+
     return { jsx: result, runningId, inputId };
 };
 
