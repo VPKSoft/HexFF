@@ -54,14 +54,15 @@ export const TabbedFilesComponent = ({
                 closable: true,
                 children: (
                     <HexEditView //
+                        notification={notification}
                         rows={16}
-                        fromPosition={0}
-                        value={f.data}
+                        fileIndex={f.file_index}
+                        fileSize={f.file_size}
                     />
                 ),
             };
         });
-    }, [openFileData]);
+    }, [notification, openFileData]);
 
     return (
         <Tabs //
