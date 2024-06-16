@@ -36,6 +36,8 @@ type InputHexProps = {
     hexValue?: number;
     hexUpperCase?: boolean;
     bytePosition: number;
+    filePosition: number;
+    onFilePositionChange: (value: number) => void;
     onHexValueChange: (value: number, bytePosition: number) => void;
 } & CommonProps;
 
@@ -53,6 +55,8 @@ const InputHexComponent = ({
     numId,
     hexValue,
     bytePosition,
+    filePosition,
+    onFilePositionChange,
     onHexValueChange,
 }: InputHexProps) => {
     const [editValue, setEdditValue] = React.useState<string | null>(null);
@@ -80,6 +84,10 @@ const InputHexComponent = ({
         setEdditValue(null);
     }, []);
 
+    const onFocus = React.useCallback(() => {
+        onFilePositionChange(filePosition);
+    }, [filePosition, onFilePositionChange]);
+
     return (
         <Input //
             className={classNames(InputHex.name, className)}
@@ -87,6 +95,7 @@ const InputHexComponent = ({
             id={numId?.toString()}
             onChange={onChange}
             onBlur={onBlur}
+            onFocus={onFocus}
             maxLength={2}
             minLength={1}
             value={editValue ?? hexValue?.toString(16).padStart(2, "0") ?? ""}

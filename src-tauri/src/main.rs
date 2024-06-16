@@ -21,6 +21,39 @@ struct AppFileState {
     file_index: i32,
     file_size: u64,
     prev_seek_pos: u64,
+    bytes_at_pos: [u8; 1024],
+}
+
+#[derive(Serialize, Deserialize)]
+struct DataInPosition {
+    value_u8: String,
+    value_i8: String,
+    value_u16: String,
+    value_i16: String,
+    value_u32: String,
+    value_i32: String,
+    value_u64: String,
+    value_i64: String,
+    value_u128: String,
+    value_i128: String,
+    value_f32: String,
+    value_f64: String,
+    value_be_u8: String,
+    value_be_i8: String,
+    value_be_u16: String,
+    value_be_i16: String,
+    value_be_u32: String,
+    value_be_i32: String,
+    value_be_u64: String,
+    value_be_i64: String,
+    value_be_u128: String,
+    value_be_i128: String,
+    value_be_f32: String,
+    value_be_f64: String,
+    char_ascii: String,
+    char_utf8: String,
+    char_utf16: String,
+    char_utf32: String,
 }
 
 /// The application state for the Tauri application.
@@ -59,7 +92,8 @@ async fn main() {
             open_file,
             read_file,
             get_open_files,
-            read_file_current_pos
+            read_file_current_pos,
+            get_data_in_position
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -103,7 +137,7 @@ async fn open_file(
 ) -> Result<i32, String> {
     match app_state.file.lock() {
         Ok(mut state) => {
-            let file = std::fs::OpenOptions::new()
+            let mut file = std::fs::OpenOptions::new()
                 .write(rw)
                 .read(true)
                 .open(file_name.clone())
@@ -113,12 +147,19 @@ async fn open_file(
 
             let index = state.len() as i32;
 
+            let mut buffer = [0; 1024];
+            match file.read(&mut buffer) {
+                Ok(_) => {}
+                Err(e) => return Err(e.to_string()),
+            }
+
             state.push(AppFileState {
                 file: file,
                 file_name: file_name,
                 file_index: index,
                 file_size: file_len,
                 prev_seek_pos: 0,
+                bytes_at_pos: buffer,
             });
 
             Ok(index)
@@ -190,9 +231,13 @@ async fn read_file(
             .seek(std::io::SeekFrom::Start(file_pos))
         {
             Ok(_) => match file[file_index].file.read(&mut buffer) {
-                Ok(_) => Ok(FileReadResult {
-                    file_index: file_index,
-                    file_data: BASE64_STANDARD.encode(&buffer),
+                Ok(_) => Ok({
+                    file[file_index].bytes_at_pos = buffer;
+
+                    FileReadResult {
+                        file_index: file_index,
+                        file_data: BASE64_STANDARD.encode(&buffer),
+                    }
                 }),
                 Err(e) => Err(e.to_string()),
             },
@@ -227,6 +272,80 @@ fn get_open_files(app_state: State<'_, AppState>) -> Result<Vec<AppFileStateResu
                 });
             }
             Ok(file_list)
+        }
+        Err(e) => Err(e.to_string()),
+    }
+}
+
+#[tauri::command]
+async fn get_data_in_position(
+    file_index: usize,
+    file_pos: u64,
+    app_state: State<'_, AppState>,
+) -> Result<DataInPosition, String> {
+    match app_state.file.lock() {
+        Ok(files) => {
+            let buffer_pos = file_pos - files[file_index].prev_seek_pos;
+            let buffer = &files[file_index].bytes_at_pos[buffer_pos as usize..];
+
+            let buffer8: [u8; 1] = buffer[0..1].try_into().unwrap();
+            let buffer16: [u8; 2] = buffer[0..2].try_into().unwrap();
+            let buffer32: [u8; 4] = buffer[0..4].try_into().unwrap();
+            let buffer64 = buffer[0..8].try_into().unwrap();
+            let buffer128 = buffer[0..16].try_into().unwrap();
+            let char_ascii = char::from(buffer8[0]).to_string();
+            let char_utf8 = match String::from_utf8(buffer16.to_vec()) {
+                Ok(s) => {
+                    if s.len() >= 1 {
+                        s[0..1].to_string()
+                    } else {
+                        s
+                    }
+                }
+                Err(_) => String::new(),
+            };
+
+            let char_utf16 = "".to_string();
+
+            //let char_utf16 = "".to_string();
+
+            let char_utf32 = match char::from_u32(u32::from_le_bytes(buffer32)) {
+                Some(c) => c.to_string(),
+                None => String::new(),
+            };
+
+            let data = DataInPosition {
+                value_u8: u8::from_le_bytes(buffer8).to_string(),
+                value_i8: i8::from_le_bytes(buffer8).to_string(),
+                value_u16: u16::from_le_bytes(buffer16).to_string(),
+                value_i16: i16::from_le_bytes(buffer16).to_string(),
+                value_u32: u32::from_le_bytes(buffer32).to_string(),
+                value_i32: i32::from_le_bytes(buffer32).to_string(),
+                value_u64: u64::from_le_bytes(buffer64).to_string(),
+                value_i64: i64::from_le_bytes(buffer64).to_string(),
+                value_u128: u128::from_le_bytes(buffer128).to_string(),
+                value_i128: i128::from_le_bytes(buffer128).to_string(),
+                value_f32: format!("{:e}", f32::from_le_bytes(buffer32)),
+                value_f64: format!("{:e}", f64::from_le_bytes(buffer64)),
+                value_be_u8: u8::from_be_bytes(buffer8).to_string(),
+                value_be_i8: i8::from_be_bytes(buffer8).to_string(),
+                value_be_u16: u16::from_be_bytes(buffer16).to_string(),
+                value_be_i16: i16::from_be_bytes(buffer16).to_string(),
+                value_be_u32: u32::from_be_bytes(buffer32).to_string(),
+                value_be_i32: i32::from_be_bytes(buffer32).to_string(),
+                value_be_u64: u64::from_be_bytes(buffer64).to_string(),
+                value_be_i64: i64::from_be_bytes(buffer64).to_string(),
+                value_be_u128: u128::from_be_bytes(buffer128).to_string(),
+                value_be_i128: i128::from_be_bytes(buffer128).to_string(),
+                value_be_f32: format!("{:e}", f32::from_be_bytes(buffer32)),
+                value_be_f64: format!("{:e}", f64::from_be_bytes(buffer64)),
+                char_ascii: char_ascii,
+                char_utf8: char_utf8,
+                char_utf16: char_utf16,
+                char_utf32: char_utf32,
+            };
+
+            Ok(data)
         }
         Err(e) => Err(e.to_string()),
     }
