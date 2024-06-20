@@ -24,6 +24,49 @@ const openFile = async (fileName: string, readWrite: boolean): Promise<number> =
     }
 };
 
+const getDataInPosition = async (fileIndex: number, filePos: number) => {
+    try {
+        return (await invoke("get_data_in_position", { fileIndex, filePos })) as DataInPositionResult;
+    } catch (error) {
+        throw new Error(`${error}`);
+    }
+};
+
+type DataInPositionResult = {
+    value_le_u8: string;
+    value_le_i8: string;
+    value_le_u16: string;
+    value_le_i16: string;
+    value_le_u32: string;
+    value_le_i32: string;
+    value_le_u64: string;
+    value_le_i64: string;
+    value_le_u128: string;
+    value_le_i128: string;
+    value_le_f32: string;
+    value_le_f64: string;
+    char_le_ascii: string;
+    char_le_utf8: string;
+    char_le_utf16: string;
+    char_le_utf32: string;
+    value_be_u8: string;
+    value_be_i8: string;
+    value_be_u16: string;
+    value_be_i16: string;
+    value_be_u32: string;
+    value_be_i32: string;
+    value_be_u64: string;
+    value_be_i64: string;
+    value_be_u128: string;
+    value_be_i128: string;
+    value_be_f32: string;
+    value_be_f64: string;
+    char_be_ascii: string;
+    char_be_utf8: string;
+    char_be_utf16: string;
+    char_be_utf32: string;
+};
+
 type AppFileStateResult = {
     file_name: string;
     file_index: number;
@@ -44,5 +87,5 @@ const getOpenFiles = async () => {
     }
 };
 
-export { readFile, openFile, readFileCurrentPos, getOpenFiles };
-export type { AppFileStateResult, FileReadResult };
+export { readFile, openFile, readFileCurrentPos, getOpenFiles, getDataInPosition };
+export type { AppFileStateResult, FileReadResult, DataInPositionResult };

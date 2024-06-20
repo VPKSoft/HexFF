@@ -4,5 +4,7 @@
     "openFile": "Avaa tiedosto",
     "fileOpenFailed": "Tiedostoa avataessa tapahtui virhe: '{{error}}'.",
     "fileReadFailed": "Tiedostoa avataessa tapahtui virhe: '{{error}}'.",
-    "couldNotGetOpenedFiles": "Avattuja tiedostoja ei saatu haettua virheellä: '{{error}}'."
+    "couldNotGetOpenedFiles": "Avattuja tiedostoja ei saatu haettua virheellä: '{{error}}'.",
+    "litleEndian": "Nouseva tavujärjestys",
+    "bigEndian": "Laskeva tavujärjestys"
 }
