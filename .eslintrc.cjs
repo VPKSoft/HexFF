@@ -33,6 +33,12 @@ module.exports = {
         "no-unused-vars": "off",
         "prettier/prettier": "warn",
         "curly": 2,
+        'react/forbid-component-props': [2, {
+  forbid: [{
+    'propName': 'style',
+  }]
+}],
+"react/forbid-dom-props": [1, { "forbid": [{ propName: "style", nessage: "Style props are not allowed"}] }],
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/no-floating-promises": "warn",

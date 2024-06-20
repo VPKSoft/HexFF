@@ -1,11 +1,12 @@
 import * as React from "react";
 import classNames from "classnames";
-import { Slider } from "antd";
+import { Slider, Switch } from "antd";
+import { styled } from "styled-components";
 import { readFile, DataInPositionResult, getDataInPosition } from "../../utilities/app/TauriWrappers";
 import { useTranslate } from "../../localization/Localization";
 import { useDebounce } from "../../hooks/UseDebounce";
 import { InputHex } from "./InputHex";
-import { HexEditViewProps, columns, renderTableHeading, renderDataCell, formatterUpper, formatterLower, HexEditView } from "./HexEditView";
+import { HexEditViewProps, columns, renderTableHeading, renderDataCell, formatterUpper, formatterLower } from "./HexEditView";
 import { ByteValueView } from "./ByteValueView";
 
 /**
@@ -13,7 +14,7 @@ import { ByteValueView } from "./ByteValueView";
  * @param param0 The component props: {@link HexEditViewProps}.
  * @returns A component.
  */
-export const HexEditViewComponent = ({
+const HextEditViewComponent = ({
     className, //
     rows,
     fileIndex,
@@ -24,6 +25,7 @@ export const HexEditViewComponent = ({
     const [fromPosition, setFromPosition] = React.useState(0);
     const [hexData, setHexData] = React.useState<Array<number>>([]);
     const [positionByteValues, setPositionByteValues] = React.useState<DataInPositionResult | undefined>();
+    const [bigEndian, setBigEndian] = React.useState(false);
 
     const readError = React.useRef(false);
 
@@ -41,7 +43,15 @@ export const HexEditViewComponent = ({
     const onFilePositionChange = React.useCallback(
         (value: number) => {
             void getDataInPosition(fileIndex, value).then(f => {
-                setPositionByteValues(f);
+                setPositionByteValues({
+                    ...f,
+                    char_le_utf8: f.char_le_utf8[0],
+                    char_le_utf16: f.char_le_utf16[0],
+                    char_le_utf32: f.char_le_utf32[0],
+                    char_be_utf8: f.char_be_utf8[0],
+                    char_be_utf16: f.char_be_utf16[0],
+                    char_be_utf32: f.char_be_utf32[0],
+                });
             });
         },
         [fileIndex]
@@ -77,32 +87,34 @@ export const HexEditViewComponent = ({
         let inputId = 0;
 
         return (
-            <table>
-                <thead>
-                    <tr>
-                        {columnMap.map((_, i: number) => {
-                            const result = renderTableHeading(i, runningId);
-                            runningId = result.runningId;
-                            return result.jsx;
+            <div>
+                <table className="InputTable">
+                    <thead>
+                        <tr>
+                            {columnMap.map((_, i: number) => {
+                                const result = renderTableHeading(i, runningId);
+                                runningId = result.runningId;
+                                return result.jsx;
+                            })}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rowMap.map(() => {
+                            currentRow += columns;
+                            return (
+                                <tr key={runningId++} className="InputRow">
+                                    {columnMap.map((_, i: number) => {
+                                        const result = renderDataCell(i, currentRow, buffPosition, inputId, runningId, fromPosition, hexData, inputsMemo);
+                                        runningId = result.runningId;
+                                        inputId = result.inputId;
+                                        return result.jsx;
+                                    })}
+                                </tr>
+                            );
                         })}
-                    </tr>
-                </thead>
-                <tbody>
-                    {rowMap.map(() => {
-                        currentRow += columns;
-                        return (
-                            <tr key={runningId++} className="InputRow">
-                                {columnMap.map((_, i: number) => {
-                                    const result = renderDataCell(i, currentRow, buffPosition, inputId, runningId, fromPosition, hexData, inputsMemo);
-                                    runningId = result.runningId;
-                                    inputId = result.inputId;
-                                    return result.jsx;
-                                })}
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         );
     }, [fromPosition, hexData, inputsMemo, rows]);
 
@@ -130,6 +142,10 @@ export const HexEditViewComponent = ({
         setFromPosition(value);
     }, []);
 
+    const onSwitchChange = React.useCallback((checked: boolean) => {
+        setBigEndian(checked);
+    }, []);
+
     return (
         <div //
             className={classNames(HexEditView.name, className)}
@@ -153,10 +169,29 @@ export const HexEditViewComponent = ({
                         }}
                     />
                 </div>
-                <ByteValueView //
-                    value={positionByteValues}
-                />
+                <div className="HexEditView-Bytes-Container">
+                    <ByteValueView //
+                        value={positionByteValues}
+                        bigEndian={bigEndian}
+                    />
+                    <div>
+                        {translate("bigEndian")}
+                        <Switch //
+                            className="Switch"
+                            checked={bigEndian}
+                            onChange={onSwitchChange}
+                        />
+                    </div>
+                </div>
             </div>
         </div>
     );
 };
+
+const HexEditView = styled(HextEditViewComponent)`
+    .Switch {
+        margin-left: 10px;
+    }
+`;
+
+export { HexEditView as HextEditViewComponent };

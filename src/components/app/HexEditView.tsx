@@ -2,7 +2,7 @@ import * as React from "react";
 import { styled } from "styled-components";
 import { CommonProps } from "../Types";
 import { NotificationType } from "../../hooks/UseNotify";
-import { HexEditViewComponent } from "./HexEditViewComponent";
+import { HextEditViewComponent } from "./HexEditViewComponent";
 
 /**
  * The props for the {@link HexEditView} component.
@@ -84,7 +84,7 @@ export const formatterLower = (value: number) => {
     return formatter(value, false) as React.ReactNode;
 };
 
-const HexEditView = styled(HexEditViewComponent)`
+const HexEditView = styled(HextEditViewComponent)`
     font-family: monospace;
     .HexEditView-Editor {
         width: 100%;
@@ -96,12 +96,18 @@ const HexEditView = styled(HexEditViewComponent)`
         display: flex;
         min-height: 0px;
     }
+    .HexEditView-Bytes-Container {
+        width: 370px;
+    }
     .InputCell {
         width: 40px;
         ${props => props.hexUpperCase && "text-transform: uppercase;"}
     }
     .InputRow {
         height: 20px;
+    }
+    InputTable {
+        display: flex;
     }
     .InputCellInput {
         height: 25px;

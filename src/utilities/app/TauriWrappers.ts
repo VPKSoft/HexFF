@@ -33,18 +33,6 @@ const getDataInPosition = async (fileIndex: number, filePos: number) => {
 };
 
 type DataInPositionResult = {
-    value_u8: string;
-    value_i8: string;
-    value_u16: string;
-    value_i16: string;
-    value_u32: string;
-    value_i32: string;
-    value_u64: string;
-    value_i64: string;
-    value_u128: string;
-    value_i128: string;
-    value_f32: string;
-    value_f64: string;
     value_le_u8: string;
     value_le_i8: string;
     value_le_u16: string;
@@ -57,10 +45,26 @@ type DataInPositionResult = {
     value_le_i128: string;
     value_le_f32: string;
     value_le_f64: string;
-    char_ascii: string;
-    char_utf8: string;
-    char_utf16: string;
-    char_utf32: string;
+    char_le_ascii: string;
+    char_le_utf8: string;
+    char_le_utf16: string;
+    char_le_utf32: string;
+    value_be_u8: string;
+    value_be_i8: string;
+    value_be_u16: string;
+    value_be_i16: string;
+    value_be_u32: string;
+    value_be_i32: string;
+    value_be_u64: string;
+    value_be_i64: string;
+    value_be_u128: string;
+    value_be_i128: string;
+    value_be_f32: string;
+    value_be_f64: string;
+    char_be_ascii: string;
+    char_be_utf8: string;
+    char_be_utf16: string;
+    char_be_utf32: string;
 };
 
 type AppFileStateResult = {

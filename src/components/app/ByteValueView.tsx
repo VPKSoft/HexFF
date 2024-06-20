@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-string-replace-all */
 import * as React from "react";
 import { styled } from "styled-components";
 import classNames from "classnames";
@@ -9,57 +10,77 @@ import { DataInPositionResult } from "../../utilities/app/TauriWrappers";
  */
 type ByteValueViewProps = {
     value: DataInPositionResult | undefined;
+    bigEndian: boolean;
 } & CommonProps;
 
+const replaceEndiannes = /_le|_be/g;
+
 /**
- * A  component ...
+ * A component to visualize different data from file position.
  * @param param0 The component props: {@link ByteValueViewProps}.
  * @returns A component.
  */
 const ByteValueViewComponent = ({
     className, //
     value,
+    bigEndian,
 }: ByteValueViewProps) => {
     // Get DataInPositionResult type keys
-    const keys = Object.keys(value || {});
+    const keys = React.useMemo(() => Object.keys(value || {}).filter(f => f.includes(bigEndian ? "_be" : "_le")), [bigEndian, value]);
+    let componentKey = 0;
 
     const dataCells = React.useMemo(() => {
         const result: JSX.Element[] = [];
 
         for (const key of keys) {
             result.push(
-                <tr>
-                    <td>
-                        <div> {key.split("_")[1]}</div>
+                <tr className="DataRow" key={componentKey++}>
+                    <td key={componentKey++} className="DataCellHeader">
+                        <div className="DataRow" key={componentKey++}>
+                            {key.replace(replaceEndiannes, "").split("_")[1]}
+                        </div>
                     </td>
-                    <td>
-                        <div>{value ? (value[key as keyof DataInPositionResult] as string) : ""}</div>
+                    <td key={componentKey++} className="DataRow">
+                        <div className="DataCell" key={componentKey++}>
+                            {value ? (value[key as keyof DataInPositionResult] as string) : ""}
+                        </div>
                     </td>
                 </tr>
             );
         }
 
         return result;
-    }, [keys, value]);
+    }, [componentKey, keys, value]);
 
     return (
         <table //
             className={classNames(ByteValueView.name, className)}
         >
-            <tbody>{dataCells}</tbody>
+            <tbody //
+                className="TableBody"
+            >
+                {dataCells}
+            </tbody>
         </table>
     );
 };
 
 const ByteValueView = styled(ByteValueViewComponent)`
-    overflow: auto;
-    .DataRow {
-        height: 10px;
+    display: flex;
+    width: 100%;
+    .TableBody {
+        width: 100%;
     }
-
+    .DataRow {
+        width: 100%;
+    }
+    .DataCellHeader {
+        width: 100%;
+        font-weight: bolder;
+    }
     .DataCell {
         text-align: right;
-        height: 10px;
+        width: 100%;
     }
 `;
 

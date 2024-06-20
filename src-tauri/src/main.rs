@@ -9,9 +9,8 @@ use std::path::Path;
 use std::sync::Mutex;
 use std::{
     fs::File,
-    io::{Read, Write},
+    io::Read, // Add Write when the file is to be written into.
 };
-
 use tauri::State;
 
 /// The application file state for the Tauri application.
@@ -26,18 +25,22 @@ struct AppFileState {
 
 #[derive(Serialize, Deserialize)]
 struct DataInPosition {
-    value_u8: String,
-    value_i8: String,
-    value_u16: String,
-    value_i16: String,
-    value_u32: String,
-    value_i32: String,
-    value_u64: String,
-    value_i64: String,
-    value_u128: String,
-    value_i128: String,
-    value_f32: String,
-    value_f64: String,
+    value_le_u8: String,
+    value_le_i8: String,
+    value_le_u16: String,
+    value_le_i16: String,
+    value_le_u32: String,
+    value_le_i32: String,
+    value_le_u64: String,
+    value_le_i64: String,
+    value_le_u128: String,
+    value_le_i128: String,
+    value_le_f32: String,
+    value_le_f64: String,
+    char_le_ascii: String,
+    char_le_utf8: String,
+    char_le_utf16: String,
+    char_le_utf32: String,
     value_be_u8: String,
     value_be_i8: String,
     value_be_u16: String,
@@ -50,10 +53,10 @@ struct DataInPosition {
     value_be_i128: String,
     value_be_f32: String,
     value_be_f64: String,
-    char_ascii: String,
-    char_utf8: String,
-    char_utf16: String,
-    char_utf32: String,
+    char_be_ascii: String,
+    char_be_utf8: String,
+    char_be_utf16: String,
+    char_be_utf32: String,
 }
 
 /// The application state for the Tauri application.
@@ -289,44 +292,80 @@ async fn get_data_in_position(
             let buffer = &files[file_index].bytes_at_pos[buffer_pos as usize..];
 
             let buffer8: [u8; 1] = buffer[0..1].try_into().unwrap();
+            let buffer8_2: [u8; 1] = buffer[1..2].try_into().unwrap();
             let buffer16: [u8; 2] = buffer[0..2].try_into().unwrap();
             let buffer32: [u8; 4] = buffer[0..4].try_into().unwrap();
             let buffer64 = buffer[0..8].try_into().unwrap();
             let buffer128 = buffer[0..16].try_into().unwrap();
+
             let char_ascii = char::from(buffer8[0]).to_string();
             let char_utf8 = match String::from_utf8(buffer16.to_vec()) {
-                Ok(s) => {
-                    if s.len() >= 1 {
-                        s[0..1].to_string()
-                    } else {
-                        s
-                    }
-                }
+                Ok(s) => s,
                 Err(_) => String::new(),
             };
 
-            let char_utf16 = "".to_string();
+            let mut buffer16be: [u8; 2] = [0, 2];
+            let value_u8: u8 = u8::from_be_bytes(buffer8);
+            let char_ascii_be = char::from(value_u8).to_string();
+            buffer16be[1] = value_u8;
+            let value_u8: u8 = u8::from_be_bytes(buffer8_2);
+            buffer16be[0] = value_u8;
+            let char_utf8_be = match String::from_utf8(buffer16be.to_vec()) {
+                Ok(s) => s,
+                Err(_) => String::new(),
+            };
 
-            //let char_utf16 = "".to_string();
+            let number = if buffer.len() > 1 {
+                ((buffer[0] as u16) << 8) | buffer[1] as u16
+            } else {
+                0 as u16
+            };
+
+            let number_be = if buffer.len() > 1 {
+                ((buffer16be[0] as u16) << 8) | buffer16be[1] as u16
+            } else {
+                0 as u16
+            };
+
+            let mut u16vec: Vec<u16> = Vec::new();
+            u16vec.push(number);
+
+            let char_utf16 = match String::from_utf16(&u16vec) {
+                Ok(s) => s,
+                Err(_) => String::new(),
+            };
+
+            let mut u16vec: Vec<u16> = Vec::new();
+            u16vec.push(number_be);
+
+            let char_utf16be = match String::from_utf16(&u16vec) {
+                Ok(s) => s,
+                Err(_) => String::new(),
+            };
 
             let char_utf32 = match char::from_u32(u32::from_le_bytes(buffer32)) {
                 Some(c) => c.to_string(),
                 None => String::new(),
             };
 
+            let char_utf32_be = match char::from_u32(u32::from_be_bytes(buffer32)) {
+                Some(c) => c.to_string(),
+                None => String::new(),
+            };
+
             let data = DataInPosition {
-                value_u8: u8::from_le_bytes(buffer8).to_string(),
-                value_i8: i8::from_le_bytes(buffer8).to_string(),
-                value_u16: u16::from_le_bytes(buffer16).to_string(),
-                value_i16: i16::from_le_bytes(buffer16).to_string(),
-                value_u32: u32::from_le_bytes(buffer32).to_string(),
-                value_i32: i32::from_le_bytes(buffer32).to_string(),
-                value_u64: u64::from_le_bytes(buffer64).to_string(),
-                value_i64: i64::from_le_bytes(buffer64).to_string(),
-                value_u128: u128::from_le_bytes(buffer128).to_string(),
-                value_i128: i128::from_le_bytes(buffer128).to_string(),
-                value_f32: format!("{:e}", f32::from_le_bytes(buffer32)),
-                value_f64: format!("{:e}", f64::from_le_bytes(buffer64)),
+                value_le_u8: u8::from_le_bytes(buffer8).to_string(),
+                value_le_i8: i8::from_le_bytes(buffer8).to_string(),
+                value_le_u16: u16::from_le_bytes(buffer16).to_string(),
+                value_le_i16: i16::from_le_bytes(buffer16).to_string(),
+                value_le_u32: u32::from_le_bytes(buffer32).to_string(),
+                value_le_i32: i32::from_le_bytes(buffer32).to_string(),
+                value_le_u64: u64::from_le_bytes(buffer64).to_string(),
+                value_le_i64: i64::from_le_bytes(buffer64).to_string(),
+                value_le_u128: u128::from_le_bytes(buffer128).to_string(),
+                value_le_i128: i128::from_le_bytes(buffer128).to_string(),
+                value_le_f32: format!("{:e}", f32::from_le_bytes(buffer32)),
+                value_le_f64: format!("{:e}", f64::from_le_bytes(buffer64)),
                 value_be_u8: u8::from_be_bytes(buffer8).to_string(),
                 value_be_i8: i8::from_be_bytes(buffer8).to_string(),
                 value_be_u16: u16::from_be_bytes(buffer16).to_string(),
@@ -339,10 +378,14 @@ async fn get_data_in_position(
                 value_be_i128: i128::from_be_bytes(buffer128).to_string(),
                 value_be_f32: format!("{:e}", f32::from_be_bytes(buffer32)),
                 value_be_f64: format!("{:e}", f64::from_be_bytes(buffer64)),
-                char_ascii: char_ascii,
-                char_utf8: char_utf8,
-                char_utf16: char_utf16,
-                char_utf32: char_utf32,
+                char_le_ascii: char_ascii,
+                char_le_utf8: char_utf8,
+                char_le_utf16: char_utf16,
+                char_le_utf32: char_utf32,
+                char_be_ascii: char_ascii_be,
+                char_be_utf8: char_utf8_be,
+                char_be_utf16: char_utf16be,
+                char_be_utf32: char_utf32_be,
             };
 
             Ok(data)

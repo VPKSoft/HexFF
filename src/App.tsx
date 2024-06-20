@@ -71,6 +71,13 @@ const App = () => {
         return appMenuItems(translate);
     }, [translate]);
 
+    React.useEffect(() => {
+        document.addEventListener("focus", onElementFocus, true);
+        return () => {
+            document.removeEventListener("focus", onElementFocus);
+        };
+    }, []);
+
     const onMenuItemClick = React.useCallback(
         (key: unknown) => {
             const keyValue = key as MenuKeys;
@@ -173,6 +180,19 @@ const App = () => {
             )}
         </>
     );
+};
+
+let lastFocusedElement: HTMLElement | null = null;
+
+// Currently only focusable components are the hex edit inputs. Add to the list if more of them are needed.
+const onElementFocus = (e: FocusEvent) => {
+    if (e.target instanceof HTMLElement) {
+        if (e.target.classList.contains("InputCellInput")) {
+            lastFocusedElement = e.target;
+        } else if (lastFocusedElement) {
+            lastFocusedElement.focus();
+        }
+    }
 };
 
 const SyledApp = styled(App)`

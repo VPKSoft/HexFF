@@ -4,5 +4,7 @@
     "openFile": "Open file",
     "fileOpenFailed": "File open failed with message '{{error}}'.",
     "fileReadFailed": "File read failed with message '{{error}}'.",
-    "couldNotGetOpenedFiles": "Could not get opened files with message '{{error}}'."
+    "couldNotGetOpenedFiles": "Could not get opened files with message '{{error}}'.",
+    "litleEndian": "Litle endian",
+    "bigEndian": "Big endian"
 }
