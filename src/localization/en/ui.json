@@ -17,5 +17,8 @@
     "minimize": "Minimize",
     "close": "Close",
     "language": "Language",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "dataInspector": "Data inspector",
+    "textInspector": "Text inspector",
+    "characterEncoding": "Character encoding"
 }

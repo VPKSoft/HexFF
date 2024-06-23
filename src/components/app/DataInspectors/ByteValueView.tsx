@@ -2,8 +2,8 @@
 import * as React from "react";
 import { styled } from "styled-components";
 import classNames from "classnames";
-import { CommonProps } from "../Types";
-import { DataInPositionResult } from "../../utilities/app/TauriWrappers";
+import { CommonProps } from "../../Types";
+import { DataInPositionResult } from "../../../utilities/app/TauriWrappers";
 
 /**
  * The props for the {@link ByteValueView} component.
@@ -26,7 +26,7 @@ const ByteValueViewComponent = ({
     bigEndian,
 }: ByteValueViewProps) => {
     // Get DataInPositionResult type keys
-    const keys = React.useMemo(() => Object.keys(value || {}).filter(f => f.includes(bigEndian ? "_be" : "_le")), [bigEndian, value]);
+    const keys = React.useMemo(() => Object.keys(value ?? dataInPositionResultDefault).filter(f => f.includes(bigEndian ? "_be" : "_le")), [bigEndian, value]);
     let componentKey = 0;
 
     const dataCells = React.useMemo(() => {
@@ -42,7 +42,7 @@ const ByteValueViewComponent = ({
                     </td>
                     <td key={componentKey++} className="DataRow">
                         <div className="DataCell" key={componentKey++}>
-                            {value ? (value[key as keyof DataInPositionResult] as string) : ""}
+                            {value ? getValueByKey(key as DataInPositionResultKey, value) : ""}
                         </div>
                     </td>
                 </tr>
@@ -63,6 +63,60 @@ const ByteValueViewComponent = ({
             </tbody>
         </table>
     );
+};
+
+type DataInPositionResultKey = keyof DataInPositionResult;
+
+// This will allow the component to render correcly even if there is no data available.
+const dataInPositionResultDefault: DataInPositionResult = {
+    value_le_u8: "",
+    value_le_i8: "",
+    value_le_u16: "",
+    value_le_i16: "",
+    value_le_u32: "",
+    value_le_i32: "",
+    value_le_u64: "",
+    value_le_i64: "",
+    value_le_u128: "",
+    value_le_i128: "",
+    value_le_f32: "",
+    value_le_f64: "",
+    char_le_ascii: "",
+    char_le_utf8: "",
+    char_le_utf16: "",
+    char_le_utf32: "",
+    value_be_u8: "",
+    value_be_i8: "",
+    value_be_u16: "",
+    value_be_i16: "",
+    value_be_u32: "",
+    value_be_i32: "",
+    value_be_u64: "",
+    value_be_i64: "",
+    value_be_u128: "",
+    value_be_i128: "",
+    value_be_f32: "",
+    value_be_f64: "",
+    char_be_ascii: "",
+    char_be_utf8: "",
+    char_be_utf16: "",
+    char_be_utf32: "",
+};
+
+const getValueByKey = (key: DataInPositionResultKey, value: DataInPositionResult) => {
+    if (
+        key === "char_le_ascii" ||
+        key === "char_be_ascii" ||
+        key === "char_le_utf8" ||
+        key === "char_be_utf8" ||
+        key === "char_le_utf16" ||
+        key === "char_be_utf16" ||
+        key === "char_le_utf32" ||
+        key === "char_be_utf32"
+    ) {
+        return (value[key] as string)[0];
+    }
+    return value[key];
 };
 
 const ByteValueView = styled(ByteValueViewComponent)`

@@ -135,6 +135,16 @@ type FileReadResult = {
     file_data: string;
 };
 
+type TextDataInPosition = {
+    text_ascii: string;
+    text_le_utf8: string;
+    text_le_utf16: string;
+    text_le_utf32: string;
+    text_be_utf8: string;
+    text_be_utf16: string;
+    text_be_utf32: string;
+};
+
 /**
  * Retrieves the list of open files.
  *
@@ -149,5 +159,13 @@ const getOpenFiles = async () => {
     }
 };
 
-export { readFile, openFile, readFileCurrentPos, getOpenFiles, getDataInPosition };
-export type { AppFileStateResult, FileReadResult, DataInPositionResult };
+const getTextDataInPosition = async (fileIndex: number) => {
+    try {
+        return (await invoke("get_text_data_in_position", { fileIndex })) as TextDataInPosition;
+    } catch (error) {
+        throw new Error(`${error}`);
+    }
+};
+
+export { readFile, openFile, readFileCurrentPos, getOpenFiles, getDataInPosition, getTextDataInPosition };
+export type { AppFileStateResult, FileReadResult, DataInPositionResult, TextDataInPosition };

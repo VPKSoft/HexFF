@@ -6,7 +6,7 @@ import { AppFileStateResult, FileReadResult, readFileCurrentPos } from "../../ut
 import { useTranslate } from "../../localization/Localization";
 import { CommonProps } from "../Types";
 import { NotificationType } from "../../hooks/UseNotify";
-import { HexEditView } from "./HexEditView";
+import { HexEditView } from "./DataInspectors/HexEditView";
 
 /**
  * The props for the {@link TabbedFiles} component.
@@ -27,6 +27,7 @@ export const TabbedFilesComponent = ({
     notification,
 }: TabbedFilesProps) => {
     const [openFileData, setOpenFileData] = React.useState<Array<AppFileStateResult & { data: string }>>([]);
+    const [activeTabKey, setActiveTabKey] = React.useState(0);
     const { translate } = useTranslate();
 
     React.useEffect(() => {
@@ -58,11 +59,17 @@ export const TabbedFilesComponent = ({
                         rows={16}
                         fileIndex={f.file_index}
                         fileSize={f.file_size}
+                        activeTabKey={activeTabKey}
+                        thisTabKey={f.file_index}
                     />
                 ),
             };
         });
-    }, [notification, openFileData]);
+    }, [activeTabKey, notification, openFileData]);
+
+    const onTabChange = React.useCallback((activeTabKey?: string) => {
+        setActiveTabKey(activeTabKey ? Number.parseInt(activeTabKey) : 0);
+    }, []);
 
     return (
         <Tabs //
@@ -70,7 +77,8 @@ export const TabbedFilesComponent = ({
             items={items}
             type="editable-card"
             hideAdd
-        ></Tabs>
+            onChange={onTabChange}
+        />
     );
 };
 
