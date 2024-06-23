@@ -1,13 +1,38 @@
+/*
+MIT License
+
+Copyright (c) 2024 VPKSoft
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 import * as React from "react";
 import classNames from "classnames";
-import { Slider, Switch } from "antd";
+import { Slider, Switch, Tabs } from "antd";
 import { styled } from "styled-components";
-import { readFile, DataInPositionResult, getDataInPosition } from "../../utilities/app/TauriWrappers";
-import { useTranslate } from "../../localization/Localization";
-import { useDebounce } from "../../hooks/UseDebounce";
-import { InputHex } from "./InputHex";
+import { readFile, DataInPositionResult, getDataInPosition, TextDataInPosition, getTextDataInPosition } from "../../../utilities/app/TauriWrappers";
+import { useTranslate } from "../../../localization/Localization";
+import { useDebounce, useUserIdleDebounce } from "../../../hooks/UseDebounce";
+import { InputHex } from "../Inputs/InputHex";
 import { HexEditViewProps, columns, renderTableHeading, renderDataCell, formatterUpper, formatterLower } from "./HexEditView";
 import { ByteValueView } from "./ByteValueView";
+import { TextValueView } from "./TextValueView";
 
 /**
  * A component to edit and view binary data in hexadecimal format.
@@ -20,12 +45,42 @@ const HextEditViewComponent = ({
     fileIndex,
     fileSize,
     hexUpperCase,
+    activeTabKey,
+    thisTabKey,
     notification,
 }: HexEditViewProps) => {
     const [fromPosition, setFromPosition] = React.useState(0);
     const [hexData, setHexData] = React.useState<Array<number>>([]);
     const [positionByteValues, setPositionByteValues] = React.useState<DataInPositionResult | undefined>();
+    const [positionTextValues, setPositionTextValues] = React.useState<TextDataInPosition | undefined>();
     const [bigEndian, setBigEndian] = React.useState(false);
+    const [lastFocusedElement, setLastFocusedElement] = React.useState<HTMLElement | null>(null);
+
+    const onElementFocus = React.useCallback(
+        (e: FocusEvent) => {
+            // eslint-disable-next-line unicorn/prefer-dom-node-dataset
+            if (e.target instanceof HTMLElement && e.target.getAttribute("data-tab-id") === thisTabKey.toString()) {
+                setLastFocusedElement(e.target);
+            }
+        },
+        [thisTabKey]
+    );
+
+    const focusPreviousElement = React.useCallback(() => {
+        if (thisTabKey === activeTabKey && lastFocusedElement && lastFocusedElement !== document.activeElement) {
+            lastFocusedElement.focus();
+        }
+    }, [activeTabKey, lastFocusedElement, thisTabKey]);
+
+    // Add a listener for the focus event to keep the hex edit input focuced.
+    React.useEffect(() => {
+        document.addEventListener("focus", onElementFocus, true);
+        return () => {
+            document.removeEventListener("focus", onElementFocus);
+        };
+    }, [onElementFocus]);
+
+    useUserIdleDebounce(focusPreviousElement, 700);
 
     const readError = React.useRef(false);
 
@@ -43,19 +98,17 @@ const HextEditViewComponent = ({
     const onFilePositionChange = React.useCallback(
         (value: number) => {
             void getDataInPosition(fileIndex, value).then(f => {
-                setPositionByteValues({
-                    ...f,
-                    char_le_utf8: f.char_le_utf8[0],
-                    char_le_utf16: f.char_le_utf16[0],
-                    char_le_utf32: f.char_le_utf32[0],
-                    char_be_utf8: f.char_be_utf8[0],
-                    char_be_utf16: f.char_be_utf16[0],
-                    char_be_utf32: f.char_be_utf32[0],
-                });
+                setPositionByteValues(f);
             });
         },
         [fileIndex]
     );
+
+    React.useEffect(() => {
+        void getTextDataInPosition(fileIndex).then(f => {
+            setPositionTextValues(f);
+        });
+    }, [fileIndex, fromPosition]);
 
     // Memoize the inputs so that they don't need to be recreated on every render
     const inputsMemo = React.useMemo(() => {
@@ -72,11 +125,12 @@ const HextEditViewComponent = ({
                     filePosition={fromPosition + i}
                     onFilePositionChange={onFilePositionChange}
                     hexUpperCase={hexUpperCase}
+                    tabId={thisTabKey}
                 />
             );
         }
         return inputs;
-    }, [rows, onHexValueChange, hexData, fromPosition, onFilePositionChange, hexUpperCase]);
+    }, [rows, onHexValueChange, hexData, fromPosition, onFilePositionChange, hexUpperCase, thisTabKey]);
 
     const tableMemo = React.useMemo(() => {
         const rowMap = Array.from({ length: rows });
@@ -169,20 +223,40 @@ const HextEditViewComponent = ({
                         }}
                     />
                 </div>
-                <div className="HexEditView-Bytes-Container">
-                    <ByteValueView //
-                        value={positionByteValues}
-                        bigEndian={bigEndian}
-                    />
-                    <div>
-                        {translate("bigEndian")}
-                        <Switch //
-                            className="Switch"
-                            checked={bigEndian}
-                            onChange={onSwitchChange}
-                        />
-                    </div>
-                </div>
+                <Tabs //
+                    items={[
+                        {
+                            label: translate("dataInspector"),
+                            key: "1",
+                            children: (
+                                <div className="HexEditView-Bytes-Container">
+                                    <ByteValueView //
+                                        value={positionByteValues}
+                                        bigEndian={bigEndian}
+                                    />
+                                    <div>
+                                        {translate("bigEndian")}
+                                        <Switch //
+                                            className="Switch"
+                                            checked={bigEndian}
+                                            onChange={onSwitchChange}
+                                        />
+                                    </div>
+                                </div>
+                            ),
+                        },
+                        {
+                            label: translate("textInspector"),
+                            key: "2",
+                            children: (
+                                <TextValueView //
+                                    rows={rows}
+                                    value={positionTextValues}
+                                />
+                            ),
+                        },
+                    ]}
+                />
             </div>
         </div>
     );

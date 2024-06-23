@@ -26,7 +26,7 @@ import * as React from "react";
 import { styled } from "styled-components";
 import classNames from "classnames";
 import { Input } from "antd";
-import { CommonProps } from "../Types";
+import { CommonProps } from "../../Types";
 
 /**
  * The props for the {@link InputHex} component.
@@ -37,6 +37,7 @@ type InputHexProps = {
     hexUpperCase?: boolean;
     bytePosition: number;
     filePosition: number;
+    tabId?: number;
     onFilePositionChange: (value: number) => void;
     onHexValueChange: (value: number, bytePosition: number) => void;
 } & CommonProps;
@@ -56,6 +57,7 @@ const InputHexComponent = ({
     hexValue,
     bytePosition,
     filePosition,
+    tabId,
     onFilePositionChange,
     onHexValueChange,
 }: InputHexProps) => {
@@ -97,6 +99,7 @@ const InputHexComponent = ({
             onBlur={onBlur}
             onFocus={onFocus}
             maxLength={2}
+            data-tab-id={tabId}
             minLength={1}
             value={editValue ?? hexValue?.toString(16).padStart(2, "0") ?? ""}
             pattern="[\dA-Fa-f]{0,2}"

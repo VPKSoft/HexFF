@@ -1,7 +1,7 @@
 import * as React from "react";
 import { styled } from "styled-components";
-import { CommonProps } from "../Types";
-import { NotificationType } from "../../hooks/UseNotify";
+import { CommonProps } from "../../Types";
+import { NotificationType } from "../../../hooks/UseNotify";
 import { HextEditViewComponent } from "./HexEditViewComponent";
 
 /**
@@ -12,6 +12,8 @@ export type HexEditViewProps = {
     fileIndex: number;
     hexUpperCase?: boolean;
     fileSize: number;
+    activeTabKey: number;
+    thisTabKey: number;
     notification: (type: NotificationType, title: string | Error | null | undefined, duration?: number | undefined) => void;
 } & CommonProps;
 
@@ -110,7 +112,7 @@ const HexEditView = styled(HextEditViewComponent)`
         display: flex;
     }
     .InputCellInput {
-        height: 25px;
+        height: 28px;
         border-radius: 0px; // For maximum space, disable rounded corners
         font-family: monospace; // Monospace for hex edit input
         ${props => props.hexUpperCase && "text-transform: uppercase;"}

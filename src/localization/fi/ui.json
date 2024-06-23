@@ -17,5 +17,8 @@
     "minimize": "Minimoi",
     "close": "Sulje",
     "language": "Kieli",
-    "cancel": "Peruuta"
+    "cancel": "Peruuta",
+    "dataInspector": "Datan esikatselu",
+    "textInspector": "Tekstin esikatselu",
+    "characterEncoding": "Merkkijonon enkoodaus"
 }

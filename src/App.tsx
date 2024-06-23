@@ -1,3 +1,27 @@
+/*
+MIT License
+
+Copyright (c) 2024 VPKSoft
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 import * as React from "react";
 import { useState } from "react";
 import { exit } from "@tauri-apps/api/process";
@@ -36,6 +60,9 @@ const App = () => {
 
     const { setStateSaverEnabled, restoreState } = useWindowStateSaver(10_000);
 
+    // Refresh the list of open files for the frontend side
+    // as the state of the backend may already exist. E.g. for the reason
+    // of the frontend refresh or similar.
     React.useEffect(() => {
         getOpenFiles()
             .then((openFiles: AppFileStateResult[]) => {
@@ -46,6 +73,8 @@ const App = () => {
             });
     }, [notification, translate]);
 
+    // Enable the window state saver if the settings are loaded.
+    // Also restore the previous window state.
     React.useEffect(() => {
         if (settingsLoaded && settings !== null) {
             setStateSaverEnabled(settings.save_window_state);
@@ -53,31 +82,30 @@ const App = () => {
         }
     }, [restoreState, settingsLoaded, settings, setStateSaverEnabled]);
 
+    // Set the locale used in to frontend.
     React.useEffect(() => {
         if (settings) {
             void setLocale(settings.locale);
         }
     }, [setLocale, settings]);
 
+    // Return false to to allow the window to close.
+    // In the future we may want to add a confirmation dialog here.
     const onClose = React.useCallback(() => {
         return false;
     }, []);
 
+    // Close the about popup.
     const aboutPopupClose = React.useCallback(() => {
         setAboutPopupVisible(false);
     }, []);
 
+    // Generate the menu items with the current locale.
     const menuItems = React.useMemo(() => {
         return appMenuItems(translate);
     }, [translate]);
 
-    React.useEffect(() => {
-        document.addEventListener("focus", onElementFocus, true);
-        return () => {
-            document.removeEventListener("focus", onElementFocus);
-        };
-    }, []);
-
+    // Handle menu item and toolbar item clicks.
     const onMenuItemClick = React.useCallback(
         (key: unknown) => {
             const keyValue = key as MenuKeys;
@@ -128,10 +156,12 @@ const App = () => {
         [notification, translate]
     );
 
+    // Close the preferences popup.
     const onPreferencesClose = React.useCallback(() => {
         setPreferencesVisible(false);
     }, []);
 
+    // Don't render the app if the settings are not loaded yet.
     if (!settingsLoaded || settings === null) {
         return <div>Loading...</div>;
     }
@@ -180,19 +210,6 @@ const App = () => {
             )}
         </>
     );
-};
-
-let lastFocusedElement: HTMLElement | null = null;
-
-// Currently only focusable components are the hex edit inputs. Add to the list if more of them are needed.
-const onElementFocus = (e: FocusEvent) => {
-    if (e.target instanceof HTMLElement) {
-        if (e.target.classList.contains("InputCellInput")) {
-            lastFocusedElement = e.target;
-        } else if (lastFocusedElement) {
-            lastFocusedElement.focus();
-        }
-    }
 };
 
 const SyledApp = styled(App)`
