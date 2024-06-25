@@ -20,5 +20,6 @@
     "cancel": "Cancel",
     "dataInspector": "Data inspector",
     "textInspector": "Text inspector",
-    "characterEncoding": "Character encoding"
+    "characterEncoding": "Character encoding",
+    "darkMode": "Dark mode"
 }

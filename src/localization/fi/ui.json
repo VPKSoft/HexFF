@@ -20,5 +20,6 @@
     "cancel": "Peruuta",
     "dataInspector": "Datan esikatselu",
     "textInspector": "Tekstin esikatselu",
-    "characterEncoding": "Merkkijonon enkoodaus"
+    "characterEncoding": "Merkkijonon enkoodaus",
+    "darkMode": "Tumma tila"
 }
