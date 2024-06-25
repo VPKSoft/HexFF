@@ -41,6 +41,7 @@ import { selectFileToOpen } from "./utilities/app/Files";
 import { useNotify } from "./hooks/UseNotify";
 import { AppFileStateResult, getOpenFiles, openFile } from "./utilities/app/TauriWrappers";
 import { TabbedFilesComponent } from "./components/app/TabbedFilesComponent";
+import { useAntdTheme, useAntdToken } from "./context/AntdThemeContext";
 
 const textColor = "white";
 const backColor = "#199CF4";
@@ -53,10 +54,12 @@ const backColor = "#199CF4";
 const App = () => {
     const [aboutPopupVisible, setAboutPopupVisible] = React.useState(false);
     const [preferencesVisible, setPreferencesVisible] = React.useState(false);
-    const [settings, settingsLoaded, updateSettings] = useSettings();
+    const [settings, settingsLoaded, updateSettings, reloadSettings] = useSettings();
     const [contextHolder, notification] = useNotify();
     const [openFiles, setOpenFiles] = useState<AppFileStateResult[]>([]);
     const { translate, setLocale } = useTranslate();
+    const { token } = useAntdToken();
+    const { setTheme, updateBackround } = useAntdTheme();
 
     const { setStateSaverEnabled, restoreState } = useWindowStateSaver(10_000);
 
@@ -159,7 +162,30 @@ const App = () => {
     // Close the preferences popup.
     const onPreferencesClose = React.useCallback(() => {
         setPreferencesVisible(false);
-    }, []);
+        void reloadSettings().then(() => {
+            setTheme && setTheme(settings?.dark_mode ? "dark" : "light");
+        });
+    }, [reloadSettings, setTheme, settings?.dark_mode]);
+
+    React.useEffect(() => {
+        if (settings && setTheme) {
+            void setLocale(settings.locale);
+            setTheme(settings.dark_mode ? "dark" : "light");
+        }
+    }, [setLocale, setTheme, settings]);
+
+    // This effect occurs when the theme token has been changed and updates the
+    // root and body element colors to match to the new theme.
+    React.useEffect(() => {
+        updateBackround && updateBackround(token);
+    }, [token, updateBackround]);
+
+    const toggleDarkMode = React.useCallback(
+        (antdTheme: "light" | "dark") => {
+            setTheme && setTheme(antdTheme);
+        },
+        [setTheme]
+    );
 
     // Don't render the app if the settings are not loaded yet.
     if (!settingsLoaded || settings === null) {
@@ -206,6 +232,7 @@ const App = () => {
                     updateSettings={updateSettings}
                     settings={settings}
                     translate={translate}
+                    toggleDarkMode={toggleDarkMode}
                 />
             )}
         </>
