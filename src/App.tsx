@@ -43,9 +43,6 @@ import { AppFileStateResult, getOpenFiles, openFile } from "./utilities/app/Taur
 import { TabbedFilesComponent } from "./components/app/TabbedFilesComponent";
 import { useAntdTheme, useAntdToken } from "./context/AntdThemeContext";
 
-const textColor = "white";
-const backColor = "#199CF4";
-
 /**
  * Renders the main application component.
  *
@@ -60,6 +57,7 @@ const App = () => {
     const { translate, setLocale } = useTranslate();
     const { token } = useAntdToken();
     const { setTheme, updateBackround } = useAntdTheme();
+    const [previewDarkMode, setPreviewDarkMode] = React.useState<boolean | null>(null);
 
     const { setStateSaverEnabled, restoreState } = useWindowStateSaver(10_000);
 
@@ -163,6 +161,7 @@ const App = () => {
     const onPreferencesClose = React.useCallback(() => {
         setPreferencesVisible(false);
         void reloadSettings().then(() => {
+            setPreviewDarkMode(null);
             setTheme && setTheme(settings?.dark_mode ? "dark" : "light");
         });
     }, [reloadSettings, setTheme, settings?.dark_mode]);
@@ -183,6 +182,7 @@ const App = () => {
     const toggleDarkMode = React.useCallback(
         (antdTheme: "light" | "dark") => {
             setTheme && setTheme(antdTheme);
+            setPreviewDarkMode(antdTheme === "dark");
         },
         [setTheme]
     );
@@ -198,8 +198,7 @@ const App = () => {
             <StyledTitle //
                 title="HexFF"
                 onClose={onClose}
-                textColor={textColor}
-                backColor={backColor}
+                darkMode={previewDarkMode ?? settings.dark_mode ?? false}
                 maximizeTitle={translate("maximize")}
                 minimizeTitle={translate("minimize")}
                 closeTitle={translate("close")}
@@ -223,7 +222,7 @@ const App = () => {
             <AboutPopup //
                 visible={aboutPopupVisible}
                 onClose={aboutPopupClose}
-                textColor={textColor}
+                textColor="white"
             />
             {updateSettings && (
                 <PreferencesPopup //
