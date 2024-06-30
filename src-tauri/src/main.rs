@@ -269,7 +269,11 @@ async fn get_data_in_position(
                 None => 0,
             };
 
-            let buffer = &files[file_index].bytes_at_pos[buffer_pos as usize..];
+            if (buffer_pos as usize) >= files[file_index].bytes_at_pos.len() {
+                return Err("Invalid file position".to_string());
+            }
+
+            let buffer = &files[file_index].bytes_at_pos[buffer_pos as usize..1024];
 
             let data = get_data_in_bytes(buffer);
 
