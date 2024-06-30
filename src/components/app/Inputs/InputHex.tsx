@@ -27,6 +27,7 @@ import { styled } from "styled-components";
 import classNames from "classnames";
 import { Input } from "antd";
 import { CommonProps } from "../../Types";
+import { useDataProps } from "../../../hooks/UseDataProps";
 
 /**
  * The props for the {@link InputHex} component.
@@ -38,6 +39,7 @@ type InputHexProps = {
     bytePosition: number;
     filePosition: number;
     tabId?: number;
+    readonly?: boolean;
     onFilePositionChange: (value: number) => void;
     onHexValueChange: (value: number, bytePosition: number) => void;
 } & CommonProps;
@@ -50,18 +52,10 @@ const fullValidateValue = /[\dA-Fa-f]{2}/;
  * @param param0 The component props: {@link InputHexProps}.
  * @returns A component.
  */
-const InputHexComponent = ({
-    className, //
-    key,
-    numId,
-    hexValue,
-    bytePosition,
-    filePosition,
-    tabId,
-    onFilePositionChange,
-    onHexValueChange,
-}: InputHexProps) => {
+const InputHexComponent = (props: InputHexProps) => {
     const [editValue, setEdditValue] = React.useState<string | null>(null);
+
+    const dataProps = useDataProps(props);
 
     const onChange = React.useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,14 +66,14 @@ const InputHexComponent = ({
             } else if (fullValidateValue.test(newValue)) {
                 setEdditValue(null);
                 const hexValue = Number.parseInt(newValue, 16);
-                onHexValueChange(hexValue, bytePosition);
+                props.onHexValueChange(hexValue, props.bytePosition);
             } else if (validateValue.test(newValue)) {
                 setEdditValue(newValue);
             } else {
                 setEdditValue(null); // Clear the focused cell on invalid input
             }
         },
-        [bytePosition, onHexValueChange]
+        [props]
     );
 
     const onBlur = React.useCallback(() => {
@@ -87,23 +81,25 @@ const InputHexComponent = ({
     }, []);
 
     const onFocus = React.useCallback(() => {
-        onFilePositionChange(filePosition);
-    }, [filePosition, onFilePositionChange]);
+        props.onFilePositionChange(props.filePosition);
+    }, [props]);
 
     return (
         <Input //
-            className={classNames(InputHex.name, className)}
-            key={key}
-            id={numId?.toString()}
+            className={classNames(InputHex.name, props.className)}
+            key={props.key}
+            id={props.numId?.toString()}
             onChange={onChange}
             onBlur={onBlur}
             onFocus={onFocus}
             maxLength={2}
-            data-tab-id={tabId}
+            readOnly={props.readonly}
+            data-tab-id={props.tabId}
             minLength={1}
-            value={editValue ?? hexValue?.toString(16).padStart(2, "0") ?? ""}
+            value={editValue ?? props.hexValue?.toString(16).padStart(2, "0") ?? ""}
             pattern="[\dA-Fa-f]{0,2}"
             required
+            {...dataProps}
         />
     );
 };

@@ -33,6 +33,7 @@ import { InputHex } from "../Inputs/InputHex";
 import { HexEditViewProps, columns, renderTableHeading, renderDataCell, formatterUpper, formatterLower } from "./HexEditView";
 import { ByteValueView } from "./ByteValueView";
 import { TextValueView } from "./TextValueView";
+import { HexEditViewKeyBoardHandler, HexEditViewMouseWheelHandler } from "./Utilities.ts/HexEditViewEvents";
 
 /**
  * A component to edit and view binary data in hexadecimal format.
@@ -65,6 +66,10 @@ const HextEditViewComponent = ({
         },
         [thisTabKey]
     );
+
+    const listenUserInteraction = React.useMemo(() => {
+        return activeTabKey === thisTabKey;
+    }, [activeTabKey, thisTabKey]);
 
     const focusPreviousElement = React.useCallback(() => {
         if (thisTabKey === activeTabKey && lastFocusedElement && lastFocusedElement !== document.activeElement) {
@@ -117,11 +122,13 @@ const HextEditViewComponent = ({
             inputs.push(
                 <InputHex //
                     className="InputCellInput"
+                    data-input-id={`${fileIndex}_${i}`}
                     key={i}
                     numId={i}
                     onHexValueChange={onHexValueChange}
-                    hexValue={hexData[i]}
+                    hexValue={fromPosition + i >= fileSize ? undefined : hexData[i]}
                     bytePosition={i}
+                    readonly={fromPosition + i >= fileSize}
                     filePosition={fromPosition + i}
                     onFilePositionChange={onFilePositionChange}
                     hexUpperCase={hexUpperCase}
@@ -130,7 +137,7 @@ const HextEditViewComponent = ({
             );
         }
         return inputs;
-    }, [rows, onHexValueChange, hexData, fromPosition, onFilePositionChange, hexUpperCase, thisTabKey]);
+    }, [rows, fileIndex, onHexValueChange, fromPosition, fileSize, hexData, onFilePositionChange, hexUpperCase, thisTabKey]);
 
     const tableMemo = React.useMemo(() => {
         const rowMap = Array.from({ length: rows });
@@ -200,6 +207,31 @@ const HextEditViewComponent = ({
         setBigEndian(checked);
     }, []);
 
+    const onKeyDown = React.useCallback(
+        (event: KeyboardEvent) => {
+            HexEditViewKeyBoardHandler(event, fromPosition, setFromPosition, listenUserInteraction, fileSize, rows, fileIndex);
+        },
+        [fileIndex, fileSize, fromPosition, listenUserInteraction, rows]
+    );
+
+    const onMouseWheel = React.useCallback(
+        (event: WheelEvent) => {
+            HexEditViewMouseWheelHandler(event, fromPosition, setFromPosition, listenUserInteraction, fileSize, rows);
+        },
+        [fileSize, fromPosition, listenUserInteraction, rows]
+    );
+
+    React.useEffect(() => {
+        if (listenUserInteraction) {
+            window.addEventListener("keydown", onKeyDown);
+            window.addEventListener("wheel", onMouseWheel);
+        }
+        return () => {
+            window.removeEventListener("keydown", onKeyDown);
+            window.removeEventListener("wheel", onMouseWheel);
+        };
+    }, [onKeyDown, listenUserInteraction, onMouseWheel]);
+
     return (
         <div //
             className={classNames(HexEditView.name, className)}
@@ -211,7 +243,7 @@ const HextEditViewComponent = ({
                 <div className="HexEditView-Slider-Container">
                     <Slider //
                         min={0}
-                        max={fileSize}
+                        max={fileSize - rows * columns}
                         value={fromPosition}
                         onChange={onChange}
                         vertical
