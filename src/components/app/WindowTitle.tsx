@@ -1,10 +1,9 @@
 import * as React from "react";
 import { styled } from "styled-components";
-import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import classNames from "classnames";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { CommonProps } from "../Types";
 import { AppIcon } from "../../utilities/app/Images";
-const appWindow = getCurrentWebviewWindow();
 
 type TitleColorConfig = {
     titleBackground: string;
@@ -34,6 +33,11 @@ type WindowTitleProps = {
     colorConfigDark?: TitleColorConfig;
     /** The color configuration for light mode. */
     colorConfigLight?: TitleColorConfig;
+    /** Calls the close function when the close button of the title bar was clicked instead of calling destroy.
+     * The close call does nothing if no permission to close is granted via the `Window.onCloseRequested` callback.
+     * The default value for this is `false`.
+     */
+    closeViaEventAccept?: boolean;
     /** Occurs when the close button of the title bar was clicked. */
     onClose?: () => Promise<boolean> | boolean;
     /**
@@ -58,27 +62,36 @@ const WindowTitle = ({
     darkMode,
     colorConfigDark = titleColorConfigDark,
     colorConfigLight = titleColorConfigLight,
+    closeViaEventAccept = false,
     onClose,
     onUserInteraction,
 }: WindowTitleProps) => {
+    const appWindow = React.useMemo(() => {
+        return getCurrentWebviewWindow();
+    }, []);
+
     const minimizeClick = React.useCallback(() => {
         void appWindow.minimize();
-    }, []);
+    }, [appWindow]);
 
     const maximizeClick = React.useCallback(() => {
         void appWindow.toggleMaximize();
-    }, []);
+    }, [appWindow]);
 
     // Close the application if the onClose callback returned false.
     const closeClick = React.useCallback(() => {
         if (onClose) {
             void Promise.resolve(onClose()).then(result => {
                 if (!result) {
-                    void appWindow.close();
+                    if (closeViaEventAccept) {
+                        void appWindow.close();
+                    } else {
+                        void appWindow.destroy();
+                    }
                 }
             });
         }
-    }, [onClose]);
+    }, [appWindow, closeViaEventAccept, onClose]);
 
     // Memoize the display title.
     const displayTitle = React.useMemo(() => {
