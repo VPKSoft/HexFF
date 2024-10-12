@@ -7,19 +7,30 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+name = "app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
 [build-dependencies]
-tauri-build = { version = "1", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = [ "dialog-open", "dialog-save", "window-start-dragging", "window-show", "process-exit", "window-minimize", "window-maximize", "window-unminimize", "window-hide", "window-close", "window-unmaximize", "shell-open"] }
+tauri = { version = "2", features = [] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1.40.0", features = ["full"] }
 confy = "0.6.1"
 serde_derive = "1.0.200"
-tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+tauri-plugin-window-state = { version = "2" }
 base64 = "0.22.1"
+tauri-plugin-dialog = "2"
+tauri-plugin-shell = "2"
+tauri-plugin-process = "2"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
+
+[target."cfg(not(any(target_os = \"android\", target_os = \"ios\")))".dependencies]
+tauri-plugin-updater = "2"
+tauri-plugin-window-state = "2"

@@ -75,21 +75,21 @@ const useUserIdleDebounce = (callBack: () => void | Promise<void>, timeOut: numb
     }, [setInteractionOccurred]);
 
     React.useEffect(() => {
-        window.addEventListener("mousemove", useInteraction);
-        window.addEventListener("mousedown", useInteraction);
-        window.addEventListener("mouseup", useInteraction);
-        window.addEventListener("mousewheel", useInteraction);
-        window.addEventListener("keydown", useInteraction);
-        window.addEventListener("keyup", useInteraction);
-        window.addEventListener("keypress", useInteraction);
+        globalThis.addEventListener("mousemove", useInteraction);
+        globalThis.addEventListener("mousedown", useInteraction);
+        globalThis.addEventListener("mouseup", useInteraction);
+        globalThis.addEventListener("mousewheel", useInteraction);
+        globalThis.addEventListener("keydown", useInteraction);
+        globalThis.addEventListener("keyup", useInteraction);
+        globalThis.addEventListener("keypress", useInteraction);
         return () => {
-            window.removeEventListener("mousemove", useInteraction);
-            window.removeEventListener("mousedown", useInteraction);
-            window.removeEventListener("mouseup", useInteraction);
-            window.removeEventListener("mousewheel", useInteraction);
-            window.removeEventListener("keydown", useInteraction);
-            window.removeEventListener("keyup", useInteraction);
-            window.removeEventListener("keypress", useInteraction);
+            globalThis.removeEventListener("mousemove", useInteraction);
+            globalThis.removeEventListener("mousedown", useInteraction);
+            globalThis.removeEventListener("mouseup", useInteraction);
+            globalThis.removeEventListener("mousewheel", useInteraction);
+            globalThis.removeEventListener("keydown", useInteraction);
+            globalThis.removeEventListener("keyup", useInteraction);
+            globalThis.removeEventListener("keypress", useInteraction);
         };
     }, [useInteraction]);
 
