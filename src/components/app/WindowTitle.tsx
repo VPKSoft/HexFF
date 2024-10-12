@@ -4,7 +4,7 @@ import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import classNames from "classnames";
 import { CommonProps } from "../Types";
 import { AppIcon } from "../../utilities/app/Images";
-const appWindow = getCurrentWebviewWindow()
+const appWindow = getCurrentWebviewWindow();
 
 type TitleColorConfig = {
     titleBackground: string;

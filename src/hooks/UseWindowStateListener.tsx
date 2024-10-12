@@ -26,7 +26,7 @@ import * as React from "react";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { EventCallback, TauriEvent, UnlistenFn } from "@tauri-apps/api/event";
 import { saveWindowState, StateFlags, restoreStateCurrent } from "@tauri-apps/plugin-window-state";
-const appWindow = getCurrentWebviewWindow()
+const appWindow = getCurrentWebviewWindow();
 
 /**
  * A hook that adds an event listener to the window object for the given event type and callback function.
