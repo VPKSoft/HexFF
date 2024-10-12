@@ -1,0 +1,26 @@
+{
+  "identifier": "main",
+  "description": "permissions that were migrated from v1",
+  "local": true,
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-maximize",
+    "core:window:allow-unmaximize",
+    "core:window:allow-minimize",
+    "core:window:allow-unminimize",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-close",
+    "core:window:allow-start-dragging",
+    "shell:allow-open",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "process:allow-exit",
+    "updater:default",
+    "dialog:default",
+    "window-state:default"
+  ]
+}

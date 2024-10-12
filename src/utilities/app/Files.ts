@@ -1,4 +1,4 @@
-import { save, open } from "@tauri-apps/api/dialog";
+import { save, open } from "@tauri-apps/plugin-dialog";
 
 /**
  * Displays an open file dialog and returns the user selected file.

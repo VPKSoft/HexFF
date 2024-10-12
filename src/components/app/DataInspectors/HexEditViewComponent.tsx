@@ -223,11 +223,11 @@ const HextEditViewComponent = ({
 
     React.useEffect(() => {
         if (listenUserInteraction) {
-            window.addEventListener("keydown", onKeyDown);
+            globalThis.addEventListener("keydown", onKeyDown);
             window.addEventListener("wheel", onMouseWheel);
         }
         return () => {
-            window.removeEventListener("keydown", onKeyDown);
+            globalThis.removeEventListener("keydown", onKeyDown);
             window.removeEventListener("wheel", onMouseWheel);
         };
     }, [onKeyDown, listenUserInteraction, onMouseWheel]);

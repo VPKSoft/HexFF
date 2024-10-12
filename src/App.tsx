@@ -24,7 +24,7 @@ SOFTWARE.
 
 import * as React from "react";
 import { useState } from "react";
-import { exit } from "@tauri-apps/api/process";
+import { exit } from "@tauri-apps/plugin-process";
 import { styled } from "styled-components";
 import "./App.css";
 import { StyledTitle } from "./components/app/WindowTitle";
