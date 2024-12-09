@@ -2,9 +2,9 @@
 import * as React from "react";
 import { styled } from "styled-components";
 import classNames from "classnames";
+import type { JSX } from "react";
 import { CommonProps } from "../../Types";
 import { DataInPositionResult } from "../../../utilities/app/TauriWrappers";
-import type { JSX } from "react";
 
 /**
  * The props for the {@link ByteValueView} component.
