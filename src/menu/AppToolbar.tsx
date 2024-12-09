@@ -22,10 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import classNames from "classnames";
 import * as React from "react";
 import { styled } from "styled-components";
-import classNames from "classnames";
-import { CommonProps } from "../components/Types";
+import type { CommonProps } from "../components/Types";
 import { TooltipObjectButton } from "../components/wrappers/TooltipObjectButton";
 
 export type ToolBarItem<T> = {

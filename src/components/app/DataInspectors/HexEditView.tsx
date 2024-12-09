@@ -1,7 +1,9 @@
+// biome-ignore lint/style/useImportType: * is not a type
 import * as React from "react";
+import type { JSX } from "react";
 import { styled } from "styled-components";
-import { CommonProps } from "../../Types";
-import { NotificationType } from "../../../hooks/UseNotify";
+import type { NotificationType } from "../../../hooks/UseNotify";
+import type { CommonProps } from "../../Types";
 import { HextEditViewComponent } from "./HexEditViewComponent";
 
 /**
@@ -14,7 +16,11 @@ export type HexEditViewProps = {
     fileSize: number;
     activeTabKey: number;
     thisTabKey: number;
-    notification: (type: NotificationType, title: string | Error | null | undefined, duration?: number | undefined) => void;
+    notification: (
+        type: NotificationType,
+        title: string | Error | null | undefined,
+        duration?: number | undefined
+    ) => void;
 } & CommonProps;
 
 export const columns: number = 16;
@@ -62,20 +68,22 @@ export const renderDataCell = (
                 </div>
             </td>
         ) : // eslint-disable-next-line prettier/prettier
-    (buffPosition >= hexData.length ? (
+        buffPosition >= hexData.length ? (
             <td key={runningId++} />
         ) : (
             <td className="InputCell" key={runningId++}>
                 {inputs[inputId++]}
             </td>
             // eslint-disable-next-line prettier/prettier
-    ));
+        );
 
     return { jsx: result, runningId, inputId };
 };
 
 const formatter = (value: number, hexUpperCase: boolean) => {
-    return hexUpperCase === true ? `${value.toString(16).padStart(8, "0").toUpperCase()}` : `${value.toString(16).padStart(8, "0")}`;
+    return hexUpperCase === true
+        ? `${value.toString(16).padStart(8, "0").toUpperCase()}`
+        : `${value.toString(16).padStart(8, "0")}`;
 };
 
 export const formatterUpper = (value: number) => {

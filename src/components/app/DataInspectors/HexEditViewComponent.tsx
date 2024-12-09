@@ -22,16 +22,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import * as React from "react";
-import classNames from "classnames";
 import { Slider, Switch, Tabs } from "antd";
+import classNames from "classnames";
+import * as React from "react";
+import type { JSX } from "react";
 import { styled } from "styled-components";
-import { readFile, DataInPositionResult, getDataInPosition, TextDataInPosition, getTextDataInPosition } from "../../../utilities/app/TauriWrappers";
-import { useTranslate } from "../../../localization/Localization";
 import { useDebounce, useUserIdleDebounce } from "../../../hooks/UseDebounce";
+import { useTranslate } from "../../../localization/Localization";
+import {
+    type DataInPositionResult,
+    type TextDataInPosition,
+    getDataInPosition,
+    getTextDataInPosition,
+    readFile,
+} from "../../../utilities/app/TauriWrappers";
 import { InputHex } from "../Inputs/InputHex";
-import { HexEditViewProps, columns, renderTableHeading, renderDataCell, formatterUpper, formatterLower } from "./HexEditView";
 import { ByteValueView } from "./ByteValueView";
+import {
+    type HexEditViewProps,
+    columns,
+    formatterLower,
+    formatterUpper,
+    renderDataCell,
+    renderTableHeading,
+} from "./HexEditView";
 import { TextValueView } from "./TextValueView";
 import { HexEditViewKeyBoardHandler, HexEditViewMouseWheelHandler } from "./Utilities.ts/HexEditViewEvents";
 
@@ -113,7 +127,7 @@ const HextEditViewComponent = ({
         void getTextDataInPosition(fileIndex).then(f => {
             setPositionTextValues(f);
         });
-    }, [fileIndex, fromPosition]);
+    }, [fileIndex]);
 
     // Memoize the inputs so that they don't need to be recreated on every render
     const inputsMemo = React.useMemo(() => {
@@ -137,7 +151,17 @@ const HextEditViewComponent = ({
             );
         }
         return inputs;
-    }, [rows, fileIndex, onHexValueChange, fromPosition, fileSize, hexData, onFilePositionChange, hexUpperCase, thisTabKey]);
+    }, [
+        rows,
+        fileIndex,
+        onHexValueChange,
+        fromPosition,
+        fileSize,
+        hexData,
+        onFilePositionChange,
+        hexUpperCase,
+        thisTabKey,
+    ]);
 
     const tableMemo = React.useMemo(() => {
         const rowMap = Array.from({ length: rows });
@@ -165,7 +189,16 @@ const HextEditViewComponent = ({
                             return (
                                 <tr key={runningId++} className="InputRow">
                                     {columnMap.map((_, i: number) => {
-                                        const result = renderDataCell(i, currentRow, buffPosition, inputId, runningId, fromPosition, hexData, inputsMemo);
+                                        const result = renderDataCell(
+                                            i,
+                                            currentRow,
+                                            buffPosition,
+                                            inputId,
+                                            runningId,
+                                            fromPosition,
+                                            hexData,
+                                            inputsMemo
+                                        );
                                         runningId = result.runningId;
                                         inputId = result.inputId;
                                         return result.jsx;
@@ -196,7 +229,9 @@ const HextEditViewComponent = ({
 
     // Memoize either the upper or lower case formatter.
     const formatter = React.useMemo(() => {
-        return hexUpperCase === true ? (value?: number | undefined) => formatterUpper(value ?? 0) : (value?: number | undefined) => formatterLower(value ?? 0);
+        return hexUpperCase === true
+            ? (value?: number | undefined) => formatterUpper(value ?? 0)
+            : (value?: number | undefined) => formatterLower(value ?? 0);
     }, [hexUpperCase]);
 
     const onChange = React.useCallback((value: number) => {
@@ -209,7 +244,15 @@ const HextEditViewComponent = ({
 
     const onKeyDown = React.useCallback(
         (event: KeyboardEvent) => {
-            HexEditViewKeyBoardHandler(event, fromPosition, setFromPosition, listenUserInteraction, fileSize, rows, fileIndex);
+            HexEditViewKeyBoardHandler(
+                event,
+                fromPosition,
+                setFromPosition,
+                listenUserInteraction,
+                fileSize,
+                rows,
+                fileIndex
+            );
         },
         [fileIndex, fileSize, fromPosition, listenUserInteraction, rows]
     );

@@ -1,11 +1,9 @@
-//@ts-expect-error - React is required for JSX
-import * as React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDoorOpen, faFolderOpen, faGear, faInfo } from "@fortawesome/free-solid-svg-icons";
-import { LocalizeFunction } from "../localization/Localization";
-
-import { ToolBarItem, ToolBarSeparator } from "./AppToolbar";
-import { MenuKeys } from "./MenuItems";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import * as React from "react";
+import type { LocalizeFunction } from "../localization/Localization";
+import type { ToolBarItem, ToolBarSeparator } from "./AppToolbar";
+import type { MenuKeys } from "./MenuItems";
 
 export const appToolbarItems = (localize?: LocalizeFunction): (ToolBarItem<MenuKeys> | ToolBarSeparator)[] => [
     {

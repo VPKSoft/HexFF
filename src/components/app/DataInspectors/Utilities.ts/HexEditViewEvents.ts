@@ -168,7 +168,14 @@ const HexEditViewKeyBoardHandler = (
     }
 };
 
-const HexEditViewMouseWheelHandler = (event: WheelEvent, fromPosition: number, setFromPosition: (value: number) => void, listenKeyboard: boolean, fileSize: number, rows: number) => {
+const HexEditViewMouseWheelHandler = (
+    event: WheelEvent,
+    fromPosition: number,
+    setFromPosition: (value: number) => void,
+    listenKeyboard: boolean,
+    fileSize: number,
+    rows: number
+) => {
     if (!listenKeyboard) {
         return;
     }

@@ -22,15 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import * as React from "react";
-import { styled } from "styled-components";
-import classNames from "classnames";
 import { Select, Switch } from "antd";
-import { CharacterMode, CommonProps, encodingLookupOptions } from "../../Types";
-import { TextDataInPosition } from "../../../utilities/app/TauriWrappers";
+import classNames from "classnames";
+import * as React from "react";
+import type { JSX } from "react";
+import { styled } from "styled-components";
 import { useTranslate } from "../../../localization/Localization";
+import type { TextDataInPosition } from "../../../utilities/app/TauriWrappers";
+import { CharacterMode, type CommonProps, encodingLookupOptions } from "../../Types";
 import { columns } from "./HexEditView";
-
 /**
  * The props for the {@link TextValueView} component.
  */
@@ -101,7 +101,12 @@ const TextValueViewComponent = ({
     );
 };
 
-const getCharCode = (value: TextDataInPosition | undefined, position: number, bigEndian: boolean, characterMode: CharacterMode) => {
+const getCharCode = (
+    value: TextDataInPosition | undefined,
+    position: number,
+    bigEndian: boolean,
+    characterMode: CharacterMode
+) => {
     switch (characterMode) {
         case CharacterMode.Ascii: {
             const result = value?.text_ascii[position];
