@@ -1,6 +1,5 @@
 import { faCircleQuestion, faDoorOpen, faFile, faGear, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-//@ts-expect-error - React is required for JSX
 import * as React from "react";
 import type { LocalizeFunction } from "../localization/Localization";
 import type { MenuItems } from "./AppMenu";
