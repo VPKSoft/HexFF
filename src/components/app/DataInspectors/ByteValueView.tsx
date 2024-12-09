@@ -1,9 +1,9 @@
-/* eslint-disable unicorn/prefer-string-replace-all */
-import * as React from "react";
-import { styled } from "styled-components";
 import classNames from "classnames";
-import { CommonProps } from "../../Types";
-import { DataInPositionResult } from "../../../utilities/app/TauriWrappers";
+import * as React from "react";
+import type { JSX } from "react";
+import { styled } from "styled-components";
+import type { DataInPositionResult } from "../../../utilities/app/TauriWrappers";
+import type { CommonProps } from "../../Types";
 
 /**
  * The props for the {@link ByteValueView} component.
@@ -26,7 +26,10 @@ const ByteValueViewComponent = ({
     bigEndian,
 }: ByteValueViewProps) => {
     // Get DataInPositionResult type keys
-    const keys = React.useMemo(() => Object.keys(value ?? dataInPositionResultDefault).filter(f => f.includes(bigEndian ? "_be" : "_le")), [bigEndian, value]);
+    const keys = React.useMemo(
+        () => Object.keys(value ?? dataInPositionResultDefault).filter(f => f.includes(bigEndian ? "_be" : "_le")),
+        [bigEndian, value]
+    );
     let componentKey = 0;
 
     const dataCells = React.useMemo(() => {

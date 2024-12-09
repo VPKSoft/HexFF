@@ -1,11 +1,11 @@
-import * as React from "react";
-import classNames from "classnames";
 import { Tabs } from "antd";
+import classNames from "classnames";
+import * as React from "react";
 import { styled } from "styled-components";
-import { AppFileStateResult, FileReadResult, readFileCurrentPos } from "../../utilities/app/TauriWrappers";
+import type { NotificationType } from "../../hooks/UseNotify";
 import { useTranslate } from "../../localization/Localization";
-import { CommonProps } from "../Types";
-import { NotificationType } from "../../hooks/UseNotify";
+import { type AppFileStateResult, type FileReadResult, readFileCurrentPos } from "../../utilities/app/TauriWrappers";
+import type { CommonProps } from "../Types";
 import { HexEditView } from "./DataInspectors/HexEditView";
 
 /**
@@ -13,7 +13,11 @@ import { HexEditView } from "./DataInspectors/HexEditView";
  */
 export type TabbedFilesProps = {
     openFiles: AppFileStateResult[];
-    notification: (type: NotificationType, title: string | Error | null | undefined, duration?: number | undefined) => void;
+    notification: (
+        type: NotificationType,
+        title: string | Error | null | undefined,
+        duration?: number | undefined
+    ) => void;
 } & CommonProps;
 
 /**

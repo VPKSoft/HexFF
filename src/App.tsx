@@ -22,26 +22,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import { exit } from "@tauri-apps/plugin-process";
 import * as React from "react";
 import { useState } from "react";
-import { exit } from "@tauri-apps/plugin-process";
 import { styled } from "styled-components";
 import "./App.css";
+import { TabbedFilesComponent } from "./components/app/TabbedFilesComponent";
 import { StyledTitle } from "./components/app/WindowTitle";
+import { AboutPopup } from "./components/popups/AboutPopup";
+import { PreferencesPopup } from "./components/popups/PreferencesPopup";
+import { useAntdTheme, useAntdToken } from "./context/AntdThemeContext";
+import { useNotify } from "./hooks/UseNotify";
+import { useWindowStateSaver } from "./hooks/UseWindowStateListener";
 import { useTranslate } from "./localization/Localization";
 import { AppMenu } from "./menu/AppMenu";
-import { MenuKeys, appMenuItems } from "./menu/MenuItems";
-import { AboutPopup } from "./components/popups/AboutPopup";
 import { AppToolbar } from "./menu/AppToolbar";
+import { type MenuKeys, appMenuItems } from "./menu/MenuItems";
 import { appToolbarItems } from "./menu/ToolbarItems";
-import { PreferencesPopup } from "./components/popups/PreferencesPopup";
-import { useSettings } from "./utilities/app/Settings";
-import { useWindowStateSaver } from "./hooks/UseWindowStateListener";
 import { selectFileToOpen } from "./utilities/app/Files";
-import { useNotify } from "./hooks/UseNotify";
-import { AppFileStateResult, getOpenFiles, openFile } from "./utilities/app/TauriWrappers";
-import { TabbedFilesComponent } from "./components/app/TabbedFilesComponent";
-import { useAntdTheme, useAntdToken } from "./context/AntdThemeContext";
+import { useSettings } from "./utilities/app/Settings";
+import { type AppFileStateResult, getOpenFiles, openFile } from "./utilities/app/TauriWrappers";
 
 /**
  * Renders the main application component.
@@ -136,7 +136,10 @@ const App = () => {
                                             setOpenFiles(openFiles);
                                         })
                                         .catch((error: Error) => {
-                                            notification("error", translate("couldNotGetOpenedFiles", undefined, { error }));
+                                            notification(
+                                                "error",
+                                                translate("couldNotGetOpenedFiles", undefined, { error })
+                                            );
                                         });
                                 })
                                 .catch((error: Error) => {

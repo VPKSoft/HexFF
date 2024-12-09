@@ -1,9 +1,8 @@
-//@ts-expect-error - React is required for JSX
-import * as React from "react";
+import { faCircleQuestion, faDoorOpen, faFile, faGear, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile, faDoorOpen, faCircleQuestion, faInfo, faGear } from "@fortawesome/free-solid-svg-icons";
-import { LocalizeFunction } from "../localization/Localization";
-import { MenuItems } from "./AppMenu";
+import * as React from "react";
+import type { LocalizeFunction } from "../localization/Localization";
+import type { MenuItems } from "./AppMenu";
 
 export const appMenuItems = (localize?: LocalizeFunction): MenuItems => [
     {

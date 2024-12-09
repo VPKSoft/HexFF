@@ -51,10 +51,11 @@ const useDebounce = (callBack: () => void | Promise<void>, timeOut: number, deps
         return () => clearInterval(onInterval);
     }, [intervalCallBack]);
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: These are supposed to be user defined dependencies
     React.useEffect(() => {
         lastTime.current = new Date();
         effectPending.current = true;
-    }, [deps, callBack]);
+    }, [deps]);
 };
 
 /**
@@ -72,7 +73,7 @@ const useUserIdleDebounce = (callBack: () => void | Promise<void>, timeOut: numb
 
     const useInteraction = React.useCallback(() => {
         setInteractionOccurred(new Date());
-    }, [setInteractionOccurred]);
+    }, []);
 
     React.useEffect(() => {
         globalThis.addEventListener("mousemove", useInteraction);
